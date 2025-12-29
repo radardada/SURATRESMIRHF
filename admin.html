@@ -3,32 +3,125 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - Undangan Eksklusif</title>
+  <title>Admin Dashboard - RHF Exclusive</title>
   <style>
-    /* Style sama seperti sebelumnya, saya ringkas */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0a0a0a; color: #d4af37; font-family: 'Montserrat', sans-serif; min-height: 100vh; }
-    .header { text-align: center; padding: 50px; border-bottom: 3px solid #d4af37; }
-    .header h1 { font-family: 'Cinzel', serif; font-size: 3.8rem; letter-spacing: 8px; }
-    .container { max-width: 1200px; margin: 40px auto; padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 40px; }
-    .card { background: rgba(20,20,20,0.9); padding: 35px; border-radius: 18px; border: 2px solid #d4af37; }
-    .card h2 { font-family: 'Cinzel', serif; font-size: 2.2rem; text-align: center; margin-bottom: 30px; }
-    label { display: block; margin: 15px 0 8px; font-weight: 500; }
-    input[type="text"], textarea { width: 100%; padding: 14px; background: #111; border: 2px solid #d4af37; color: #d4af37; border-radius: 10px; }
-    .btn { padding: 14px; background: #d4af37; color: #000; border: none; border-radius: 10px; font-size: 1.2rem; cursor: pointer; margin-top: 20px; width: 100%; }
-    .btn:hover { background: #ffd700; }
+    body {
+      background: linear-gradient(135deg, #0a0a0a, #1e1e1e);
+      color: #d4af37;
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+    }
+    .header {
+      text-align: center;
+      padding: 60px 20px;
+      border-bottom: 4px solid #d4af37;
+    }
+    .header h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 4rem;
+      letter-spacing: 10px;
+      text-shadow: 0 0 30px rgba(212,175,55,0.6);
+    }
+    .header p { margin-top: 15px; font-size: 1.4rem; color: #aaa; }
+
+    .container {
+      max-width: 1300px;
+      margin: 50px auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 50px;
+    }
+    .card {
+      background: rgba(15,15,15,0.9);
+      padding: 40px;
+      border-radius: 20px;
+      border: 3px solid #d4af37;
+      box-shadow: 0 20px 50px rgba(212,175,55,0.2);
+    }
+    .card h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 40px;
+      letter-spacing: 5px;
+    }
+
+    label {
+      display: block;
+      margin: 20px 0 10px;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 16px;
+      background: #111;
+      border: 2px solid #d4af37;
+      color: #d4af37;
+      border-radius: 12px;
+      font-size: 1.1rem;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #ffd700;
+      box-shadow: 0 0 20px rgba(255,215,0,0.5);
+    }
+    textarea { min-height: 120px; resize: vertical; }
+
+    .btn {
+      padding: 16px 40px;
+      background: #d4af37;
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 30px;
+      width: 100%;
+      transition: all 0.4s;
+    }
+    .btn:hover { background: #ffd700; transform: translateY(-5px); box-shadow: 0 10px 30px rgba(255,215,0,0.4); }
+    .btn:disabled { background: #555; cursor: not-allowed; }
     .btn-danger { background: #8b0000; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { padding: 15px; border-bottom: 1px solid #444; text-align: left; }
-    th { background: #222; }
-    .preview-img { max-width: 100px; margin-top: 10px; border-radius: 8px; border: 1px solid #d4af37; }
-    .status { text-align: center; padding: 15px; border-radius: 8px; margin: 20px auto; max-width: 800px; }
+    .btn-danger:hover { background: #a00000; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+    th, td {
+      padding: 18px;
+      text-align: left;
+      border-bottom: 1px solid #444;
+    }
+    th { background: #222; font-weight: 600; }
+
+    .preview-img {
+      max-width: 100px;
+      margin-top: 15px;
+      border-radius: 10px;
+      border: 2px solid #d4af37;
+      box-shadow: 0 0 15px rgba(212,175,55,0.4);
+    }
+
+    .status {
+      text-align: center;
+      padding: 20px;
+      font-size: 1.3rem;
+      border-radius: 12px;
+      margin: 30px auto;
+      max-width: 800px;
+    }
     .status.success { background: rgba(0,255,0,0.2); color: #0f0; }
     .status.error { background: rgba(255,0,0,0.2); color: #ff6b6b; }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- Hanya Firebase Realtime Database (tanpa Storage) -->
+  <!-- Hanya Firebase Realtime Database -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -36,8 +129,10 @@
     const firebaseConfig = {
       apiKey: "AIzaSyALIhKFz4bpOPmES6t2fAdx8VMPP0ye1wc",
       authDomain: "rhf-resmi.firebaseapp.com",
-      projectId: "rhf-resmi",
       databaseURL: "https://rhf-resmi-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "rhf-resmi",
+      storageBucket: "rhf-resmi.firebasestorage.app",
+      messagingSenderId: "313439235544",
       appId: "1:313439235544:web:b19a2ad538e34c1fe516ad"
     };
     firebase.initializeApp(firebaseConfig);
@@ -48,12 +143,12 @@
     let editingKey = null;
 
     const statusEl = document.getElementById('status');
-    const addButton = document.getElementById('addButton');
+    const addBtn = document.getElementById('addBtn');
 
     window.onload = () => {
       loadConfig();
       loadCodes();
-      setStatus('Terhubung (tanpa Storage)', 'success');
+      setStatus('Siap digunakan – Gunakan link HTTPS untuk gambar', 'success');
     };
 
     function setStatus(msg, type = 'success') {
@@ -61,9 +156,31 @@
       statusEl.className = 'status ' + type;
     }
 
-    function loadConfig() { /* sama seperti sebelumnya */ }
+    function loadConfig() {
+      configRef.on('value', snap => {
+        const data = snap.val() || {};
+        document.getElementById('mainTitle').value = data.mainTitle || "CONFIRM UNTUK MEMBUKA\nUNDANGAN EKSKLUSIF";
+        document.getElementById('mainSubtitle').value = data.mainSubtitle || "Klik di area ini untuk melanjutkan";
+        document.getElementById('formTitle').value = data.formTitle || "MASUKKAN KODE AKSES";
+        document.getElementById('formDesc').value = data.formDesc || "Undangan ini hanya untuk tamu terpilih.\nMasukkan kode eksklusif yang telah diberikan.";
+        document.getElementById('inputPlaceholder').value = data.inputPlaceholder || "XXXX-XXXX";
+        document.getElementById('buttonText').value = data.buttonText || "BUKA SURAT";
+        document.getElementById('errorMessage').value = data.errorMessage || "Kode salah! Silakan coba lagi.";
+      });
+    }
 
-    function saveConfig() { /* sama */ }
+    function saveConfig() {
+      const config = {
+        mainTitle: document.getElementById('mainTitle').value,
+        mainSubtitle: document.getElementById('mainSubtitle').value,
+        formTitle: document.getElementById('formTitle').value,
+        formDesc: document.getElementById('formDesc').value,
+        inputPlaceholder: document.getElementById('inputPlaceholder').value,
+        buttonText: document.getElementById('buttonText').value,
+        errorMessage: document.getElementById('errorMessage').value
+      };
+      configRef.set(config).then(() => setStatus('Teks berhasil disimpan!', 'success')).catch(err => setStatus('Gagal: ' + err.message, 'error'));
+    }
 
     function loadCodes() {
       codesRef.on('value', snap => {
@@ -93,22 +210,23 @@
       codesRef.child(key).once('value').then(snap => {
         const item = snap.val();
         editingKey = key;
-        document.getElementById('newCode').value = item.code || '';
+        document.getElementById('codeInput').value = item.code || '';
         document.getElementById('notes').value = item.notes || '';
         document.getElementById('downloadLink').value = item.download_link || '';
         document.getElementById('logoUrl').value = item.logo_url || '';
         document.getElementById('licenseUrl').value = item.license_url || '';
         document.getElementById('logoPreview').innerHTML = item.logo_url ? `<img src="${item.logo_url}" class="preview-img">` : '';
         document.getElementById('licensePreview').innerHTML = item.license_url ? `<img src="${item.license_url}" class="preview-img">` : '';
-        addButton.textContent = 'UPDATE KODE';
+        addBtn.textContent = 'UPDATE KODE';
+        setStatus('Edit mode aktif', 'success');
       });
     }
 
     async function addOrUpdateCode() {
-      addButton.disabled = true;
-      setStatus('Menyimpan...', 'success');
+      addBtn.disabled = true;
+      setStatus('Menyimpan kode...', 'success');
 
-      const code = document.getElementById('newCode').value.trim().toUpperCase();
+      const code = document.getElementById('codeInput').value.trim().toUpperCase();
       const notes = document.getElementById('notes').value.trim();
       const downloadLink = document.getElementById('downloadLink').value.trim();
       const logoUrl = document.getElementById('logoUrl').value.trim();
@@ -116,7 +234,7 @@
 
       if (!code) {
         setStatus('Kode wajib diisi!', 'error');
-        addButton.disabled = false;
+        addBtn.disabled = false;
         return;
       }
 
@@ -135,29 +253,29 @@
           setStatus('Kode berhasil diupdate!', 'success');
         } else {
           await codesRef.push(data);
-          setStatus('Kode baru berhasil ditambahkan!', 'success');
+          setStatus('Kode baru berhasil dibuat!', 'success');
         }
         resetForm();
-      } catch (error) {
-        setStatus('Gagal: ' + error.message + ' (Cek Database Rules!)', 'error');
+      } catch (err) {
+        setStatus('GAGAL: ' + err.message + ' (Cek Database Rules!)', 'error');
       }
-      addButton.disabled = false;
+      addBtn.disabled = false;
     }
 
     function resetForm() {
       editingKey = null;
-      document.getElementById('newCode').value = '';
+      document.getElementById('codeInput').value = '';
       document.getElementById('notes').value = '';
       document.getElementById('downloadLink').value = '';
       document.getElementById('logoUrl').value = '';
       document.getElementById('licenseUrl').value = '';
       document.getElementById('logoPreview').innerHTML = '';
       document.getElementById('licensePreview').innerHTML = '';
-      addButton.textContent = 'TAMBAH KODE';
+      addBtn.textContent = 'BUAT KODE SURAT';
     }
 
     function deleteCode(key) {
-      if (confirm('Yakin hapus?')) {
+      if (confirm('Hapus kode ini?')) {
         codesRef.child(key).remove().then(() => setStatus('Kode dihapus', 'success'));
       }
     }
@@ -166,43 +284,68 @@
 <body>
 
   <div class="header">
-    <h1>ADMIN DASHBOARD</h1>
-    <p>(Tanpa Storage - Gunakan Link HTTPS untuk Gambar)</p>
+    <h1>RHF ADMIN</h1>
+    <p>Kelola Kode Surat Eksklusif</p>
   </div>
 
   <div id="status" class="status">Memuat...</div>
 
   <div class="container">
 
+    <!-- Pengaturan Teks -->
     <div class="card">
-      <h2>Pengaturan Teks</h2>
-      <!-- Field teks sama seperti sebelumnya -->
+      <h2>Pengaturan Teks Tampilan</h2>
+      <label>Judul Utama</label>
+      <textarea id="mainTitle"></textarea>
+      <label>Subtitle</label>
+      <input type="text" id="mainSubtitle">
+      <label>Judul Form Kode</label>
+      <input type="text" id="formTitle">
+      <label>Deskripsi Form</label>
+      <textarea id="formDesc"></textarea>
+      <label>Placeholder Input</label>
+      <input type="text" id="inputPlaceholder">
+      <label>Teks Tombol</label>
+      <input type="text" id="buttonText">
+      <label>Pesan Error</label>
+      <input type="text" id="errorMessage">
       <button class="btn" onclick="saveConfig()">SIMPAN TEKS</button>
     </div>
 
+    <!-- Kelola Kode Surat -->
     <div class="card">
-      <h2>Kelola Kode Akses</h2>
-      <label>Kode Akses</label>
-      <input type="text" id="newCode" placeholder="VIP-2026">
+      <h2>Buat Kode Surat Baru</h2>
+      <label>Kode Surat</label>
+      <input type="text" id="codeInput" placeholder="VIP-2026">
 
-      <label>Catatan</label>
-      <textarea id="notes"></textarea>
+      <label>Catatan (opsional)</label>
+      <textarea id="notes" placeholder="Untuk siapa kode ini"></textarea>
 
-      <label>Link Download</label>
+      <label>Link Download (tombol di surat)</label>
       <input type="text" id="downloadLink" placeholder="https://link-download.com/file">
 
       <label>Link Logo (HTTPS)</label>
-      <input type="text" id="logoUrl" placeholder="https://i.ibb.co/xxx/logo.png">
+      <input type="text" id="logoUrl" placeholder="https://i.ibb.co/.../logo.png" oninput="document.getElementById('logoPreview').innerHTML = this.value ? '<img src=\"' + this.value + '\" class=\"preview-img\">' : '';">
       <div id="logoPreview"></div>
 
       <label>Link Cap Lisensi RHF (HTTPS)</label>
-      <input type="text" id="licenseUrl" placeholder="https://i.ibb.co/xxx/cap-rhf.png">
+      <input type="text" id="licenseUrl" placeholder="https://i.imgur.com/H4paMmJ.jpeg" oninput="document.getElementById('licensePreview').innerHTML = this.value ? '<img src=\"' + this.value + '\" class=\"preview-img\">' : '';">
       <div id="licensePreview"></div>
 
-      <button class="btn" id="addButton" onclick="addOrUpdateCode()">TAMBAH KODE</button>
+      <button class="btn" id="addBtn" onclick="addOrUpdateCode()">BUAT KODE SURAT</button>
 
+      <h2 style="margin-top:60px;">Daftar Kode Surat</h2>
       <table>
-        <thead><tr><th>Kode</th><th>Catatan</th><th>Download</th><th>Logo</th><th>Cap</th><th>Aksi</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Kode</th>
+            <th>Catatan</th>
+            <th>Download</th>
+            <th>Logo</th>
+            <th>Cap</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
         <tbody id="codesBody"></tbody>
       </table>
     </div>
