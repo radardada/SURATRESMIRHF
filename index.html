@@ -7,7 +7,7 @@
   <meta name="description" content="Undangan eksklusif hanya untuk tamu terpilih.">
   
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Playfair+Display:wght@400;500&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Playfair+Display:wght@400;500&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   
   <style>
     * {
@@ -28,7 +28,7 @@
       position: relative;
     }
 
-    /* Partikel Emas Halus (Detail Kecil Super Bagus) */
+    /* Partikel Emas Kompleks */
     .particles {
       position: absolute;
       top: 0;
@@ -40,47 +40,57 @@
     }
     .particle {
       position: absolute;
-      background: #d4af37;
+      background: linear-gradient(45deg, #d4af37, #ffd700);
       border-radius: 50%;
-      opacity: 0.3;
-      animation: float 15s infinite linear;
+      opacity: 0;
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+      animation: floatComplex 20s infinite linear;
     }
-    @keyframes float {
-      0% { transform: translateY(100vh) translateX(0); opacity: 0; }
-      10% { opacity: 0.4; }
+    @keyframes floatComplex {
+      0% { 
+        transform: translateY(100vh) translateX(0) rotate(0deg); 
+        opacity: 0; 
+      }
+      10% { opacity: 0.6; }
+      50% { opacity: 0.8; }
       90% { opacity: 0.4; }
-      100% { transform: translateY(-100px) translateX(100px); opacity: 0; }
+      100% { 
+        transform: translateY(-150px) translateX(150px) rotate(360deg); 
+        opacity: 0; 
+      }
     }
 
+    /* Klik Area Awal */
     .container {
       text-align: center;
       z-index: 10;
       max-width: 90%;
+      padding: 20px;
       cursor: pointer;
       transition: transform 0.4s ease;
     }
     .container:hover {
-      transform: scale(1.02);
+      transform: scale(1.03);
     }
 
     h1 {
       font-family: 'Cinzel', serif;
       font-weight: 900;
-      font-size: clamp(2.5rem, 8vw, 5rem);
-      letter-spacing: 10px;
+      font-size: clamp(2.3rem, 7vw, 4.5rem);
+      letter-spacing: 8px;
       text-transform: uppercase;
-      line-height: 1.2;
+      line-height: 1.3;
       text-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
       animation: glow 4s ease-in-out infinite alternate;
     }
     @keyframes glow {
-      from { text-shadow: 0 0 20px rgba(212,175,55,0.4), 0 0 40px rgba(212,175,55,0.2); }
-      to { text-shadow: 0 0 40px rgba(212,175,55,0.8), 0 0 60px rgba(212,175,55,0.4); }
+      from { text-shadow: 0 0 20px rgba(212,175,55,0.4); }
+      to { text-shadow: 0 0 50px rgba(212,175,55,0.8); }
     }
 
     p.subtitle {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(1.1rem, 3vw, 1.6rem);
+      font-size: clamp(1rem, 3vw, 1.5rem);
       margin-top: 40px;
       color: #bbbbbb;
       letter-spacing: 2px;
@@ -91,6 +101,7 @@
       display: none;
       text-align: center;
       z-index: 10;
+      padding: 20px;
     }
     .loader {
       border: 6px solid #222;
@@ -107,41 +118,52 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* Access Form */
+    /* Access Form - Diperbaiki Total untuk Mobile */
     #accessSection {
       display: none;
       text-align: center;
-      max-width: 500px;
       z-index: 10;
+      width: 90%;
+      max-width: 500px;
+      padding: 40px 20px;
+      background: rgba(15, 15, 15, 0.7);
+      border-radius: 20px;
+      border: 2px solid #d4af37;
+      box-shadow: 0 20px 50px rgba(212, 175, 55, 0.2);
+      backdrop-filter: blur(10px);
       animation: fadeIn 1s ease;
+      margin: 20px;
+      max-height: 90vh;
+      overflow-y: auto;
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     #accessSection h2 {
       font-family: 'Cinzel', serif;
-      font-size: 2.8rem;
+      font-size: clamp(2rem, 6vw, 2.8rem);
       margin-bottom: 20px;
       letter-spacing: 6px;
     }
 
     #accessSection p {
       color: #aaa;
-      font-size: 1.1rem;
-      line-height: 1.6;
+      font-size: clamp(1rem, 3.5vw, 1.2rem);
+      line-height: 1.7;
       margin: 20px auto;
       max-width: 400px;
+      white-space: pre-line;
     }
 
     input[type="text"] {
       padding: 18px 20px;
       font-size: 1.3rem;
-      width: 300px;
-      max-width: 90%;
+      width: 100%;
+      max-width: 320px;
       border: 2px solid #d4af37;
-      background: rgba(15, 15, 15, 0.8);
+      background: rgba(15, 15, 15, 0.9);
       color: #d4af37;
       text-align: center;
       border-radius: 12px;
@@ -150,37 +172,39 @@
       transition: all 0.4s ease;
       outline: none;
       backdrop-filter: blur(5px);
+      margin: 10px auto;
+      display: block;
     }
     input[type="text"]:focus {
       border-color: #ffd700;
-      box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+      box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
     }
 
     button {
-      padding: 14px 40px;
-      font-size: 1.3rem;
+      padding: 16px 50px;
+      font-size: 1.4rem;
       background: transparent;
-      border: 2px solid #d4af37;
+      border: 3px solid #d4af37;
       color: #d4af37;
       cursor: pointer;
-      border-radius: 12px;
-      margin-top: 20px;
-      letter-spacing: 3px;
-      font-weight: 500;
+      border-radius: 15px;
+      margin-top: 30px;
+      letter-spacing: 4px;
+      font-weight: 600;
       transition: all 0.5s ease;
       font-family: 'Cinzel', serif;
     }
     button:hover {
       background: linear-gradient(90deg, #d4af37, #ffd700);
       color: #000;
-      transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(212, 175, 55, 0.4);
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(212, 175, 55, 0.5);
     }
 
     .error {
       color: #ff6b6b;
-      margin-top: 15px;
-      font-size: 1rem;
+      margin-top: 20px;
+      font-size: 1.1rem;
       display: none;
       animation: shake 0.5s ease;
     }
@@ -190,17 +214,22 @@
       75% { transform: translateX(10px); }
     }
 
-    /* Responsive */
-    @media (max-width: 480px) {
-      h1 { letter-spacing: 6px; }
-      input[type="text"] { width: 280px; }
-      button { padding: 12px 30px; font-size: 1.2rem; }
+    /* Responsif Tambahan */
+    @media (max-height: 600px) {
+      #accessSection {
+        padding: 20px 15px;
+        margin: 10px;
+      }
+      button {
+        padding: 14px 40px;
+        font-size: 1.3rem;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Partikel Emas Halus -->
+  <!-- Partikel Emas -->
   <div class="particles" id="particles"></div>
 
   <!-- Klik untuk Mulai -->
@@ -211,7 +240,7 @@
 
   <!-- Loading -->
   <div id="loadingSection">
-    <h2 style="font-family: 'Cinzel', serif; font-size: 2.5rem; letter-spacing: 6px;">Memverifikasi...</h2>
+    <h2 style="font-family: 'Cinzel', serif; font-size: clamp(2rem, 6vw, 2.5rem); letter-spacing: 6px;">Memverifikasi...</h2>
     <div class="loader"></div>
     <p style="color: #aaa; margin-top: 20px; font-size: 1.1rem;">Harap tunggu sebentar</p>
   </div>
@@ -221,38 +250,29 @@
     <h2>MASUKKAN KODE AKSES</h2>
     <p>Undangan ini hanya untuk tamu terpilih.<br>Masukkan kode eksklusif yang telah diberikan kepada Anda.</p>
     <input type="text" id="accessCode" placeholder="XXXX-XXXX" maxlength="12" autocomplete="off">
-    <br>
-    <button id="submitCode">BUKA UNDANGAN</button>
+    <button id="submitCode">BUKA SURAT</button>
     <p class="error" id="errorMsg">Kode salah! Silakan coba lagi.</p>
   </div>
 
   <script>
-    // Daftar kode valid (nanti bisa di-manage via admin.html)
-    const validCodes = [
-      "GOLD-2025",
-      "VIP-1234",
-      "EXCL-9999",
-      "TAMU-VIP",
-      "RAHASIA1"
-    ];
-
-    let confirmed = false;
-
-    // Generate partikel emas
+    // Generate partikel emas kompleks
     function createParticles() {
       const particlesContainer = document.getElementById('particles');
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 50; i++) {
         const particle = document.createElement('div');
         particle.classList.add('particle');
-        particle.style.width = Math.random() * 5 + 2 + 'px';
-        particle.style.height = particle.style.width;
+        const size = Math.random() * 6 + 3;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
         particle.style.left = Math.random() * 100 + 'vw';
-        particle.style.animationDelay = Math.random() * 15 + 's';
-        particle.style.animationDuration = 10 + Math.random() * 10 + 's';
+        particle.style.animationDelay = Math.random() * 20 + 's';
+        particle.style.animationDuration = 15 + Math.random() * 15 + 's';
         particlesContainer.appendChild(particle);
       }
     }
     createParticles();
+
+    let confirmed = false;
 
     // Klik area awal
     document.getElementById('clickArea').addEventListener('click', function() {
@@ -280,12 +300,12 @@
 
     function checkCode() {
       let input = document.getElementById('accessCode').value.trim().toUpperCase();
-      input = input.replace(/[^A-Z0-9]/g, '-'); // Normalisasi
+      input = input.replace(/[^A-Z0-9]/g, '-');
+
+      const validCodes = ["GOLD-2025", "VIP-1234", "EXCL-9999", "TAMU-VIP", "RAHASIA1"];
 
       if (validCodes.includes(input)) {
-        // Efek sukses sebelum redirect
-        document.getElementById('accessSection').style.opacity = '0.5';
-        document.body.style.background = 'linear-gradient(135deg, #1a1a1a, #0f0f0f)';
+        document.getElementById('accessSection').style.opacity = '0.6';
         setTimeout(() => {
           window.location.href = 'letter.html';
         }, 800);
@@ -294,12 +314,10 @@
         const inputField = document.getElementById('accessCode');
         error.style.display = 'block';
         inputField.style.borderColor = '#ff6b6b';
-        inputField.style.boxShadow = '0 0 15px rgba(255,107,107,0.4)';
         
         setTimeout(() => {
           error.style.display = 'none';
           inputField.style.borderColor = '#d4af37';
-          inputField.style.boxShadow = 'none';
           inputField.value = '';
           inputField.focus();
         }, 3000);
