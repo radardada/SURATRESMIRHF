@@ -48,15 +48,16 @@
       100% { transform: translateY(-200px) translateX(calc(100vw * (Math.random() - 0.5) * 2)) scale(1.5); opacity: 0; }
     }
 
-    /* Envelope & Animasi Membuka */
+    /* Envelope Utama - Presisi & Rapi */
     #letterEnvelope {
-      perspective: 1000px;
-      width: 90%;
-      max-width: 700px;
-      height: 90vh;
-      max-height: 800px;
+      perspective: 1200px;
+      width: 92%;
+      max-width: 720px;
+      height: 92vh;
+      max-height: 820px;
       position: relative;
       z-index: 10;
+      box-shadow: 0 0 100px rgba(255,215,0,0.8);
     }
 
     #letterFlap {
@@ -64,52 +65,50 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 40%;
+      height: 35%;
       background: linear-gradient(to bottom, #111, #000);
       border: 4px solid #ffd700;
       border-bottom: none;
-      border-radius: 20px 20px 0 0;
+      border-radius: 25px 25px 0 0;
       transform-origin: bottom;
       transform: rotateX(0deg);
-      transition: transform 2s ease;
+      transition: transform 2.2s ease;
       z-index: 20;
-      box-shadow: 0 -20px 40px rgba(0,0,0,0.8);
+      box-shadow: 0 -15px 40px rgba(0,0,0,0.9);
     }
 
     #letterBody {
-      background: linear-gradient(to bottom, #0f0f0f, #000);
+      background: linear-gradient(to bottom, #0a0a0a, #000);
       border: 4px solid #ffd700;
-      border-radius: 20px;
-      padding: 60px 40px;
-      box-shadow: 0 0 100px rgba(255,215,0,0.8), inset 0 0 40px rgba(255,215,0,0.2);
+      border-radius: 25px;
       height: 100%;
+      padding: 50px 40px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      box-shadow: 0 0 120px rgba(255,215,0,0.9), inset 0 0 50px rgba(255,215,0,0.2);
       opacity: 0;
-      animation: revealLetter 2s ease 1s forwards;
-      overflow: hidden;
+      animation: revealLetter 2s ease 1.2s forwards;
     }
     @keyframes revealLetter { to { opacity: 1; } }
 
     .open #letterFlap { transform: rotateX(-180deg); }
 
-    /* Scrollable Content */
+    /* Konten Surat dengan Scroll Rapi */
     .letter-content {
       flex: 1;
       overflow-y: auto;
-      padding-right: 10px;
-      margin-bottom: 40px;
+      padding-right: 15px;
+      margin-bottom: 30px;
     }
     .letter-content::-webkit-scrollbar {
-      width: 8px;
+      width: 10px;
     }
     .letter-content::-webkit-scrollbar-track {
       background: #111;
       border-radius: 10px;
     }
     .letter-content::-webkit-scrollbar-thumb {
-      background: #d4af37;
+      background: linear-gradient(#d4af37, #ffd700);
       border-radius: 10px;
     }
     .letter-content::-webkit-scrollbar-thumb:hover {
@@ -118,67 +117,69 @@
 
     .letter-title {
       font-family: 'Cinzel', serif;
-      font-size: clamp(2.5rem, 8vw, 4rem);
-      letter-spacing: 8px;
+      font-size: clamp(2.5rem, 8vw, 4.2rem);
+      letter-spacing: 10px;
       margin-bottom: 40px;
-      text-shadow: 0 0 30px #ffd700;
+      text-shadow: 0 0 35px #ffd700;
       text-align: center;
     }
     .letter-code {
-      font-size: clamp(1.8rem, 6vw, 3rem);
+      font-size: clamp(2rem, 7vw, 3.5rem);
       font-weight: bold;
-      letter-spacing: 10px;
+      letter-spacing: 12px;
       margin: 40px 0;
       color: #ffd700;
-      text-shadow: 0 0 40px #ffd700;
+      text-shadow: 0 0 50px #ffd700;
       text-align: center;
     }
     .letter-notes {
-      font-size: 1.4rem;
-      line-height: 1.9;
+      font-size: 1.45rem;
+      line-height: 2;
       margin: 40px 0;
       white-space: pre-line;
       text-align: justify;
+      text-justify: inter-word;
     }
     .letter-logo {
-      max-width: 200px;
-      margin: 40px auto;
+      max-width: 220px;
+      margin: 50px auto;
       display: block;
-      border-radius: 15px;
-      box-shadow: 0 0 40px rgba(255,215,0,0.6);
+      border-radius: 20px;
+      box-shadow: 0 0 50px rgba(255,215,0,0.7);
     }
     .download-btn {
       display: block;
       width: fit-content;
-      margin: 40px auto;
-      padding: 18px 60px;
+      margin: 50px auto;
+      padding: 20px 70px;
       background: transparent;
       border: 4px solid #ffd700;
       color: #ffd700;
       font-family: 'Cinzel', serif;
-      font-size: 1.6rem;
-      letter-spacing: 5px;
-      border-radius: 20px;
+      font-size: 1.8rem;
+      letter-spacing: 6px;
+      border-radius: 25px;
       text-decoration: none;
       transition: all 0.5s;
     }
     .download-btn:hover {
       background: #ffd700;
       color: #000;
-      box-shadow: 0 0 60px #ffd700;
+      box-shadow: 0 0 70px #ffd700;
     }
 
-    /* Cap Lisensi Besar di Bawah */
+    /* Cap Lisensi di Bawah (Selalu Terlihat) */
     .license-stamp-large {
-      width: 300px;
+      width: 320px;
       margin: 40px auto 20px;
       display: block;
       opacity: 0.9;
-      filter: drop-shadow(0 0 40px #ffd700);
+      filter: drop-shadow(0 0 50px #ffd700);
     }
     @media (max-width: 480px) {
-      .license-stamp-large { width: 200px; }
-      .letter-content { padding-right: 5px; }
+      .license-stamp-large { width: 220px; }
+      .letter-content { padding-right: 10px; }
+      .letter-notes { font-size: 1.35rem; line-height: 1.9; }
     }
   </style>
 </head>
@@ -187,7 +188,7 @@
   <!-- Partikel Emas -->
   <div class="particles" id="particles"></div>
 
-  <!-- Envelope & Surat -->
+  <!-- Envelope Surat -->
   <div id="letterEnvelope">
     <div id="letterFlap"></div>
     <div id="letterBody">
@@ -237,10 +238,10 @@
       btn.style.display = 'block';
     }
 
-    // Animasi membuka surat
+    // Animasi membuka envelope
     setTimeout(() => {
       document.getElementById('letterEnvelope').classList.add('open');
-    }, 500);
+    }, 600);
   </script>
 </body>
 </html>
