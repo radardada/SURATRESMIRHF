@@ -3,19 +3,73 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - Surat Eksklusif</title>
+  <title>Admin Dashboard - RHF Exclusive</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #111;
-      color: #0f0;
-      padding: 50px;
-      text-align: center;
+      margin: 0;
+      background: linear-gradient(135deg, #0a0a0a, #1e1e1e);
+      color: #d4af37;
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
     }
-    h1 { font-size: 3rem; margin-bottom: 50px; }
-    #count { font-size: 6rem; font-weight: bold; }
-    .note { margin-top: 50px; color: #aaa; }
+    .header {
+      text-align: center;
+      padding: 40px;
+      border-bottom: 3px solid #d4af37;
+    }
+    .header h1 {
+      font-size: 3.5rem;
+      letter-spacing: 5px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 50px auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+    .card {
+      background: rgba(20,20,20,0.8);
+      padding: 30px;
+      border-radius: 15px;
+      border: 2px solid #d4af37;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(212,175,55,0.2);
+    }
+    .big-number {
+      font-size: 5rem;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+    .btn {
+      background: #d4af37;
+      color: #000;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .btn:hover { background: #fff; }
+    .btn-danger {
+      background: #8b0000;
+      margin-left: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      color: #fff;
+    }
+    th, td {
+      padding: 15px;
+      border-bottom: 1px solid #444;
+    }
+    th { background: #222; }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Cinzel&display=swap" rel="stylesheet">
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -32,17 +86,59 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const opensRef = db.ref('opens');
+    const historyRef = db.ref('history');
 
-    opensRef.on('value', (snapshot) => {
-      const count = snapshot.val() || 0;
-      document.getElementById('count').textContent = count;
-    });
+    function updateDashboard() {
+      opensRef.on('value', (snap) => {
+        document.getElementById('totalOpens').textContent = snap.val() || 0;
+      });
+
+      historyRef.limitToLast(10).on('value', (snap) => {
+        const data = snap.val() || {};
+        const tbody = document.getElementById('historyBody');
+        tbody.innerHTML = '';
+        Object.keys(data).reverse().forEach(key => {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td>\( {key}</td><td> \){new Date(parseInt(data[key])).toLocaleString('id-ID')}</td>`;
+          tbody.appendChild(row);
+        });
+      });
+    }
+
+    function resetCounter() {
+      if (confirm('Yakin reset total opens ke 0? Semua history juga akan dihapus.')) {
+        opensRef.set(0);
+        historyRef.remove();
+      }
+    }
+
+    window.onload = updateDashboard;
   </script>
 </head>
 <body>
-  <h1>ADMIN PANEL</h1>
-  <p>Jumlah orang yang telah membuka surat:</p>
-  <div id="count">0</div>
-  <p class="note">Data real-time dari Firebase Realtime Database</p>
+  <div class="header">
+    <h1>RHF ADMIN DASHBOARD</h1>
+    <p>Monitoring Akses Surat Eksklusif</p>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2>Total Pembukaan Surat</h2>
+      <div class="big-number" id="totalOpens">0</div>
+      <button class="btn btn-danger" onclick="resetCounter()">RESET COUNTER</button>
+    </div>
+
+    <div class="card">
+      <h2>Riwayat 10 Pembukaan Terakhir</h2>
+      <table>
+        <thead>
+          <tr><th>No</th><th>Waktu Akses</th></tr>
+        </thead>
+        <tbody id="historyBody">
+          <!-- Diisi otomatis -->
+        </tbody>
+      </table>
+    </div>
+  </div>
 </body>
 </html>
