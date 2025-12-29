@@ -18,7 +18,7 @@
 
     body {
       height: 100vh;
-      background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+      background: #000000; /* Latar hitam pekat untuk fokus efek partikel */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -28,7 +28,7 @@
       position: relative;
     }
 
-    /* Partikel Emas - Lebih besar, lebih megah */
+    /* Partikel Emas - Diperluas maksimal, efek lebih megah */
     .particles {
       position: absolute;
       top: 0;
@@ -40,27 +40,37 @@
     }
     .particle {
       position: absolute;
-      background: radial-gradient(circle, #ffd700, #d4af37);
+      background: radial-gradient(circle, #ffd700, rgba(255,215,0,0.8));
       border-radius: 50%;
       opacity: 0;
-      box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-      animation: floatBig 25s infinite linear;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 1);
+      animation: floatWide 30s infinite linear;
     }
-    @keyframes floatBig {
-      0% { transform: translateY(120vh) translateX(0) scale(0.5); opacity: 0; }
-      15% { opacity: 0.7; }
-      50% { opacity: 0.9; }
-      85% { opacity: 0.5; }
-      100% { transform: translateY(-200px) translateX(200px) scale(1.2); opacity: 0; }
+    @keyframes floatWide {
+      0% { 
+        transform: translateY(100vh) translateX(0) scale(0.5); 
+        opacity: 0; 
+      }
+      10% { opacity: 0.8; }
+      50% { opacity: 1; }
+      90% { opacity: 0.6; }
+      100% { 
+        transform: translateY(-200px) translateX(calc(100vw * (Math.random() - 0.5) * 2)) scale(1.5); 
+        opacity: 0; 
+      }
     }
 
-    /* Area Awal Confirm */
+    /* Area Awal Confirm - Presisi tengah */
     #clickArea {
       text-align: center;
       z-index: 10;
       cursor: pointer;
       max-width: 95%;
       padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     /* Tombol CONFIRM */
@@ -71,7 +81,7 @@
       padding: 28px 100px;
       display: inline-block;
       box-shadow: 
-        0 0 50px rgba(212, 175, 55, 0.6),
+        0 0 60px rgba(212, 175, 55, 0.7),
         inset 0 0 20px rgba(255, 215, 0, 0.2),
         0 15px 40px rgba(0,0,0,0.8);
       transition: all 0.5s ease;
@@ -81,7 +91,7 @@
     .confirm-button:hover {
       transform: translateY(-8px) scale(1.04);
       box-shadow: 
-        0 0 80px rgba(212, 175, 55, 0.9),
+        0 0 90px rgba(212, 175, 55, 1),
         inset 0 0 30px rgba(255, 215, 0, 0.4),
         0 25px 50px rgba(0,0,0,0.9);
       border-color: #ffd700;
@@ -94,22 +104,23 @@
       letter-spacing: 10px;
       text-transform: uppercase;
       color: #ffd700;
-      text-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+      text-shadow: 0 0 30px rgba(255, 215, 0, 1);
     }
 
-    /* Teks Deskripsi - Dibesarkan */
+    /* Teks Deskripsi - Lebih besar & presisi */
     .confirm-desc {
       font-family: 'Playfair Display', serif;
       font-weight: 700;
       font-size: clamp(1.8rem, 5.5vw, 2.8rem);
       letter-spacing: 5px;
-      margin-bottom: 60px;
+      margin-bottom: 70px;
       color: #ffd700;
-      text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+      text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
       line-height: 1.4;
+      text-align: center;
     }
 
-    /* Subtitle - Dibesarkan */
+    /* Subtitle - Dibawa lagi & lebih besar */
     p.subtitle {
       font-family: 'Playfair Display', serif;
       font-size: clamp(1.3rem, 4vw, 1.8rem);
@@ -117,6 +128,7 @@
       letter-spacing: 3px;
       line-height: 1.6;
       text-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+      text-align: center;
     }
 
     /* Loading Section */
@@ -141,7 +153,7 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* Access Form */
+    /* Access Form - Tetap rapi */
     #accessSection {
       display: none;
       text-align: center;
@@ -240,7 +252,7 @@
 </head>
 <body>
 
-  <!-- Partikel Emas Lebih Besar & Megah -->
+  <!-- Partikel Emas Diperluas Maksimal -->
   <div class="particles" id="particles"></div>
 
   <!-- Tombol Confirm -->
@@ -269,18 +281,19 @@
   </div>
 
   <script>
-    // Generate partikel lebih besar & megah
+    // Generate partikel diperluas maksimal
     function createParticles() {
       const particlesContainer = document.getElementById('particles');
-      for (let i = 0; i < 70; i++) {  // Lebih banyak partikel
+      for (let i = 0; i < 100; i++) {  // Lebih banyak lagi
         const particle = document.createElement('div');
         particle.classList.add('particle');
-        const size = Math.random() * 12 + 6;  // Ukuran lebih besar
+        const size = Math.random() * 15 + 8;  // Lebih besar
         particle.style.width = size + 'px';
         particle.style.height = size + 'px';
         particle.style.left = Math.random() * 100 + 'vw';
-        particle.style.animationDelay = Math.random() * 25 + 's';
-        particle.style.animationDuration = 20 + Math.random() * 20 + 's';
+        particle.style.top = Math.random() * 100 + 'vh';  // Mulai dari berbagai posisi
+        particle.style.animationDelay = Math.random() * 30 + 's';
+        particle.style.animationDuration = 25 + Math.random() * 20 + 's';
         particlesContainer.appendChild(particle);
       }
     }
@@ -305,7 +318,7 @@
       }, 3000);
     });
 
-    // Check kode (hardcode sementara)
+    // Check kode
     document.getElementById('submitCode').addEventListener('click', checkCode);
     document.getElementById('accessCode').addEventListener('keypress', function(e) {
       if (e.key === 'Enter') checkCode();
