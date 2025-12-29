@@ -24,8 +24,6 @@
       letter-spacing: 8px;
       text-shadow: 0 0 20px rgba(212,175,55,0.4);
     }
-    .header p { margin-top: 10px; font-size: 1.3rem; color: #aaa; }
-
     .container {
       max-width: 1200px;
       margin: 40px auto;
@@ -49,12 +47,10 @@
       margin-bottom: 30px;
       letter-spacing: 4px;
     }
-
     label {
       display: block;
       margin: 15px 0 8px;
       font-weight: 500;
-      letter-spacing: 1px;
     }
     input[type="text"], input[type="file"], textarea {
       width: 100%;
@@ -64,7 +60,6 @@
       color: #d4af37;
       border-radius: 10px;
       font-size: 1.1rem;
-      font-family: 'Montserrat', sans-serif;
     }
     input:focus, textarea:focus {
       outline: none;
@@ -72,23 +67,23 @@
       box-shadow: 0 0 15px rgba(212,175,55,0.4);
     }
     textarea { resize: vertical; min-height: 100px; }
-
     .btn {
-      padding: 12px 30px;
+      padding: 14px 30px;
       background: #d4af37;
       color: #000;
       border: none;
       border-radius: 10px;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: 600;
       cursor: pointer;
-      margin-top: 15px;
+      margin-top: 20px;
       transition: all 0.3s;
+      width: 100%;
     }
-    .btn:hover { background: #ffd700; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(212,175,55,0.4); }
-    .btn-danger { background: #8b0000; margin-left: 10px; }
+    .btn:hover { background: #ffd700; transform: translateY(-3px); }
+    .btn:disabled { background: #555; cursor: not-allowed; }
+    .btn-danger { background: #8b0000; }
     .btn-danger:hover { background: #a00000; }
-
     table {
       width: 100%;
       border-collapse: collapse;
@@ -99,30 +94,23 @@
       text-align: left;
       border-bottom: 1px solid #444;
     }
-    th { background: #222; font-weight: 600; }
-    .actions button {
-      padding: 8px 15px;
-      margin-right: 8px;
-      font-size: 0.9rem;
-    }
-
-    .status {
-      text-align: center;
-      padding: 15px;
-      font-size: 1.1rem;
-      color: #0f0;
-      background: rgba(0,255,0,0.1);
-      border-radius: 8px;
-      margin: 20px auto;
-      max-width: 600px;
-    }
-
+    th { background: #222; }
     .preview-img {
       max-width: 80px;
       margin-top: 10px;
       border-radius: 8px;
       border: 1px solid #d4af37;
     }
+    .status {
+      text-align: center;
+      padding: 15px;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      margin: 20px auto;
+      max-width: 800px;
+    }
+    .status.success { background: rgba(0,255,0,0.2); color: #0f0; }
+    .status.error { background: rgba(255,0,0,0.2); color: #ff6b6b; }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
 
@@ -146,18 +134,25 @@
 
     const configRef = db.ref('config');
     const codesRef = db.ref('accessCodes');
-
     let editingKey = null;
+
+    const statusEl = document.getElementById('status');
+    const addButton = document.getElementById('addButton');
 
     window.onload = () => {
       loadConfig();
       loadCodes();
-      document.getElementById('status').textContent = 'Terhubung ke Firebase — Siap digunakan';
+      setStatus('Terhubung ke Firebase', 'success');
     };
 
-    // Load konfigurasi teks
+    function setStatus(message, type = 'success') {
+      statusEl.textContent = message;
+      statusEl.className = 'status ' + type;
+    }
+
+    // Load teks konfigurasi
     function loadConfig() {
-      configRef.on('value', (snap) => {
+      configRef.on('value', snap => {
         const data = snap.val() || {};
         document.getElementById('mainTitle').value = data.mainTitle || "CONFIRM UNTUK MEMBUKA\nUNDANGAN EKSKLUSIF";
         document.getElementById('mainSubtitle').value = data.mainSubtitle || "Klik di area ini untuk melanjutkan";
@@ -180,12 +175,17 @@
         errorMessage: document.getElementById('errorMessage').value,
         updatedAt: Date.now()
       };
-      configRef.set(config).then(() => alert('Konfigurasi teks berhasil disimpan!'));
+      configRef.set(config)
+        .then(() => setStatus('Teks konfigurasi berhasil disimpan!', 'success'))
+        .catch(err => {
+          console.error(err);
+          setStatus('Gagal simpan teks: ' + err.message, 'error');
+        });
     }
 
     // Load daftar kode
     function loadCodes() {
-      codesRef.on('value', (snap) => {
+      codesRef.on('value', snap => {
         const codes = snap.val() || {};
         const tbody = document.getElementById('codesBody');
         tbody.innerHTML = '';
@@ -198,7 +198,7 @@
             <td>${item.download_link ? '<a href="' + item.download_link + '" target="_blank">Link</a>' : '-'}</td>
             <td>${item.logo_url ? '<img src="' + item.logo_url + '" class="preview-img">' : '-'}</td>
             <td>${item.license_stamp_url ? '<img src="' + item.license_stamp_url + '" class="preview-img">' : '-'}</td>
-            <td class="actions">
+            <td>
               <button class="btn" onclick="editCode('${key}')">EDIT</button>
               <button class="btn btn-danger" onclick="deleteCode('${key}')">HAPUS</button>
             </td>
@@ -208,7 +208,6 @@
       });
     }
 
-    // Edit kode
     function editCode(key) {
       codesRef.child(key).once('value').then(snap => {
         const item = snap.val();
@@ -218,12 +217,15 @@
         document.getElementById('downloadLink').value = item.download_link || '';
         document.getElementById('logoPreview').innerHTML = item.logo_url ? `<img src="${item.logo_url}" class="preview-img">` : '';
         document.getElementById('licensePreview').innerHTML = item.license_stamp_url ? `<img src="${item.license_stamp_url}" class="preview-img">` : '';
-        document.getElementById('addButton').textContent = 'UPDATE KODE';
+        addButton.textContent = 'UPDATE KODE';
+        setStatus('Sedang edit kode: ' + item.code, 'success');
       });
     }
 
-    // Tambah atau Update Kode
     async function addOrUpdateCode() {
+      addButton.disabled = true;
+      setStatus('Menyimpan...', 'success');
+
       const code = document.getElementById('newCode').value.trim().toUpperCase();
       const notes = document.getElementById('notes').value.trim();
       const downloadLink = document.getElementById('downloadLink').value.trim();
@@ -231,7 +233,8 @@
       const licenseFile = document.getElementById('licenseFile').files[0];
 
       if (!code) {
-        alert('Kode akses wajib diisi!');
+        setStatus('Kode akses wajib diisi!', 'error');
+        addButton.disabled = false;
         return;
       }
 
@@ -252,7 +255,7 @@
 
         const data = {
           code,
-          notes,
+          notes: notes || null,
           download_link: downloadLink || null,
           logo_url: logoUrl,
           license_stamp_url: licenseUrl,
@@ -261,16 +264,17 @@
 
         if (editingKey) {
           await codesRef.child(editingKey).set(data);
-          alert('Kode berhasil diupdate!');
+          setStatus('Kode berhasil diupdate!', 'success');
         } else {
           await codesRef.push(data);
-          alert('Kode baru berhasil ditambahkan!');
+          setStatus('Kode baru berhasil ditambahkan!', 'success');
         }
-
         resetForm();
       } catch (error) {
-        console.error(error);
-        alert('Gagal menyimpan kode. Cek koneksi atau ukuran file gambar.');
+        console.error("Error saving code:", error);
+        setStatus('GAGAL: ' + error.message + ' (Cek Firebase Rules!)', 'error');
+      } finally {
+        addButton.disabled = false;
       }
     }
 
@@ -283,22 +287,22 @@
       document.getElementById('licenseFile').value = '';
       document.getElementById('logoPreview').innerHTML = '';
       document.getElementById('licensePreview').innerHTML = '';
-      document.getElementById('addButton').textContent = 'TAMBAH KODE';
+      addButton.textContent = 'TAMBAH KODE';
     }
 
     function deleteCode(key) {
       if (confirm('Yakin hapus kode ini?')) {
-        codesRef.child(key).remove().then(() => alert('Kode berhasil dihapus'));
+        codesRef.child(key).remove()
+          .then(() => setStatus('Kode berhasil dihapus', 'success'))
+          .catch(err => setStatus('Gagal hapus: ' + err.message, 'error'));
       }
     }
 
     function resetAll() {
-      if (confirm('YAKIN RESET SEMUA DATA? (Kode + Konfigurasi)')) {
-        if (prompt('Ketik "RESET SEMUA" untuk konfirmasi') === 'RESET SEMUA') {
-          configRef.remove();
-          codesRef.remove();
-          alert('Semua data telah direset');
-        }
+      if (confirm('YAKIN RESET SEMUA DATA?') && prompt('Ketik RESET SEMUA') === 'RESET SEMUA') {
+        Promise.all([configRef.remove(), codesRef.remove()])
+          .then(() => setStatus('Semua data direset!', 'success'))
+          .catch(err => setStatus('Gagal reset: ' + err.message, 'error'));
       }
     }
   </script>
@@ -307,80 +311,56 @@
 
   <div class="header">
     <h1>ADMIN DASHBOARD</h1>
-    <p>Kelola Undangan Eksklusif RHF</p>
+    <p>Kelola Kode Akses & Tampilan Undangan</p>
   </div>
 
   <div id="status" class="status">Memuat...</div>
 
   <div class="container">
 
-    <!-- Pengaturan Teks -->
     <div class="card">
-      <h2>Pengaturan Teks Tampilan</h2>
+      <h2>Pengaturan Teks</h2>
       <label>Judul Utama</label>
       <textarea id="mainTitle"></textarea>
-
       <label>Subtitle</label>
       <input type="text" id="mainSubtitle">
-
       <label>Judul Form Kode</label>
       <input type="text" id="formTitle">
-
       <label>Deskripsi Form</label>
       <textarea id="formDesc"></textarea>
-
-      <label>Placeholder Input</label>
+      <label>Placeholder</label>
       <input type="text" id="inputPlaceholder">
-
       <label>Teks Tombol</label>
       <input type="text" id="buttonText">
-
       <label>Pesan Error</label>
       <input type="text" id="errorMessage">
-
-      <button class="btn" onclick="saveConfig()" style="width:100%;">SIMPAN TEKS</button>
+      <button class="btn" onclick="saveConfig()">SIMPAN TEKS</button>
     </div>
 
-    <!-- Kelola Kode Akses -->
     <div class="card">
-      <h2>Kelola Kode Akses Surat</h2>
-
+      <h2>Kelola Kode Akses</h2>
       <label>Kode Akses</label>
-      <input type="text" id="newCode" placeholder="VIP-2026" style="text-transform: uppercase;">
-
+      <input type="text" id="newCode" placeholder="VIP-2026">
       <label>Catatan</label>
-      <textarea id="notes" placeholder="Untuk siapa kode ini"></textarea>
-
-      <label>Link Download (tombol di surat)</label>
+      <textarea id="notes"></textarea>
+      <label>Link Download</label>
       <input type="text" id="downloadLink" placeholder="https://...">
-
-      <label>Logo / Gambar</label>
+      <label>Logo</label>
       <input type="file" id="logoFile" accept="image/*">
       <div id="logoPreview"></div>
-
-      <label>Cap Lisensi RHF (greenscreen)</label>
+      <label>Cap Lisensi RHF</label>
       <input type="file" id="licenseFile" accept="image/*">
       <div id="licensePreview"></div>
-
-      <button class="btn" id="addButton" onclick="addOrUpdateCode()" style="width:100%;">TAMBAH KODE</button>
+      <button class="btn" id="addButton" onclick="addOrUpdateCode()">TAMBAH KODE</button>
 
       <table>
         <thead>
-          <tr>
-            <th>Kode</th>
-            <th>Catatan</th>
-            <th>Download</th>
-            <th>Logo</th>
-            <th>Cap</th>
-            <th>Aksi</th>
-          </tr>
+          <tr><th>Kode</th><th>Catatan</th><th>Download</th><th>Logo</th><th>Cap</th><th>Aksi</th></tr>
         </thead>
         <tbody id="codesBody"></tbody>
       </table>
 
-      <div style="margin-top: 30px; text-align: center;">
-        <button class="btn btn-danger" onclick="resetAll()">RESET SEMUA DATA</button>
-      </div>
+      <button class="btn btn-danger" onclick="resetAll()" style="margin-top:30px;">RESET SEMUA DATA</button>
     </div>
 
   </div>
