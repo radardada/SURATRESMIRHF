@@ -3,134 +3,217 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Undangan Eksklusif RHF</title>
+  <title>Surat Eksklusif RHF</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Playfair+Display:wght@400;700&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
-    /* Style sama seperti versi sebelumnya (welcome, loading, access, successLoading, particles, cap lisensi) */
-    /* Saya ringkas untuk fokus ke script */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { height: 100vh; background: #000; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; color: #d4af37; overflow: hidden; position: relative; }
-    .particles { /* sama */ }
-    #welcomeSection, #loadingSection, #accessSection, #successLoading { /* sama seperti versi sebelumnya */ }
-    .confirm-button { /* sama */ }
-    .license-stamp { position: absolute; bottom: 30px; right: 30px; width: 180px; opacity: 0.7; pointer-events: none; filter: drop-shadow(0 0 20px #ffd700); }
+
+    body {
+      height: 100vh;
+      background: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      color: #d4af37;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Partikel Emas Mewah */
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      background: radial-gradient(circle, #ffd700, rgba(255,215,0,0.8));
+      border-radius: 50%;
+      opacity: 0;
+      box-shadow: 0 0 30px #ffd700;
+      animation: floatWide 30s infinite linear;
+    }
+    @keyframes floatWide {
+      0% { transform: translateY(100vh) translateX(0) scale(0.5); opacity: 0; }
+      10% { opacity: 0.8; }
+      50% { opacity: 1; }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(-200px) translateX(calc(100vw * (Math.random() - 0.5) * 2)) scale(1.5); opacity: 0; }
+    }
+
+    /* Animasi Membuka Surat */
+    #letterEnvelope {
+      perspective: 1000px;
+      width: 90%;
+      max-width: 700px;
+      position: relative;
+      z-index: 10;
+    }
+
+    #letterFlap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: linear-gradient(to bottom, #111, #000);
+      border: 4px solid #ffd700;
+      border-bottom: none;
+      border-radius: 20px 20px 0 0;
+      transform-origin: bottom;
+      transform: rotateX(0deg);
+      transition: transform 2s ease;
+      z-index: 20;
+      box-shadow: 0 -20px 40px rgba(0,0,0,0.8);
+    }
+
+    #letterBody {
+      background: linear-gradient(to bottom, #0f0f0f, #000);
+      border: 4px solid #ffd700;
+      border-radius: 20px;
+      padding: 60px 40px;
+      box-shadow: 0 0 100px rgba(255,215,0,0.8), inset 0 0 40px rgba(255,215,0,0.2);
+      text-align: center;
+      opacity: 0;
+      animation: revealLetter 2s ease 1s forwards;
+    }
+    @keyframes revealLetter {
+      to { opacity: 1; }
+    }
+
+    /* Efek Membuka Flap Envelope */
+    .open #letterFlap {
+      transform: rotateX(-180deg);
+    }
+
+    /* Isi Surat */
+    .letter-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      letter-spacing: 8px;
+      margin-bottom: 40px;
+      text-shadow: 0 0 30px #ffd700;
+    }
+    .letter-code {
+      font-size: clamp(1.8rem, 6vw, 3rem);
+      font-weight: bold;
+      letter-spacing: 10px;
+      margin: 40px 0;
+      color: #ffd700;
+      text-shadow: 0 0 40px #ffd700;
+    }
+    .letter-notes {
+      font-size: 1.4rem;
+      line-height: 1.8;
+      margin: 40px 0;
+      max-width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+      white-space: pre-line;
+    }
+    .letter-logo {
+      max-width: 200px;
+      margin: 40px auto;
+      border-radius: 15px;
+      box-shadow: 0 0 40px rgba(255,215,0,0.6);
+    }
+    .download-btn {
+      display: inline-block;
+      padding: 18px 60px;
+      background: transparent;
+      border: 4px solid #ffd700;
+      color: #ffd700;
+      font-family: 'Cinzel', serif;
+      font-size: 1.6rem;
+      letter-spacing: 5px;
+      border-radius: 20px;
+      margin: 40px 0;
+      text-decoration: none;
+      transition: all 0.5s;
+    }
+    .download-btn:hover {
+      background: #ffd700;
+      color: #000;
+      box-shadow: 0 0 60px #ffd700;
+    }
+
+    /* Cap Lisensi Besar di Bawah */
+    .license-stamp-large {
+      width: 300px;
+      margin: 50px auto 0;
+      opacity: 0.9;
+      filter: drop-shadow(0 0 40px #ffd700);
+    }
+    @media (max-width: 480px) {
+      .license-stamp-large { width: 200px; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Partikel & Cap Lisensi -->
+  <!-- Partikel Emas -->
   <div class="particles" id="particles"></div>
-  <img src="https://i.imgur.com/H4paMmJ.jpeg" alt="Cap Lisensi RHF" class="license-stamp">
 
-  <!-- Tampilan 1 -->
-  <div id="welcomeSection">
-    <p class="praise-text">Selamat Datang di Undangan Eksklusif RHF<br>Pengalaman Mewah yang Hanya untuk yang Terpilih</p>
-    <div class="confirm-button" id="confirmBtn">
-      <h1>KONFIRM</h1>
+  <!-- Envelope & Surat dengan Animasi Membuka -->
+  <div id="letterEnvelope">
+    <div id="letterFlap"></div>
+    <div id="letterBody">
+      <h1 class="letter-title">SURAT EKSKLUSIF RHF</h1>
+      <div class="letter-code" id="codeDisplay">KODE RAHASIA</div>
+      <p class="letter-notes" id="notesDisplay">Selamat, Anda telah membuka undangan eksklusif RHF.</p>
+      <img id="logoDisplay" class="letter-logo" style="display:none;">
+      <a id="downloadBtn" class="download-btn" style="display:none;" target="_blank">DOWNLOAD FILE</a>
+      <img src="https://i.imgur.com/H4paMmJ.jpeg" alt="Cap Lisensi Resmi RHF" class="license-stamp-large">
     </div>
   </div>
 
-  <!-- Loading Biasa -->
-  <div id="loadingSection" style="display:none;">
-    <h2>Memverifikasi...</h2>
-    <div class="loader"></div>
-  </div>
-
-  <!-- Tampilan 2: Input Kode -->
-  <div id="accessSection" style="display:none;">
-    <h2>MASUKKAN KODE AKSES</h2>
-    <p>Proteksi Tingkat Tertinggi</p>
-    <input type="text" id="accessCode" placeholder="XXXX-XXXX" maxlength="12" autocomplete="off">
-    <button id="submitCode">BUKA SURAT</button>
-    <p class="error" id="errorMsg" style="display:none;">Kode salah! Silakan coba lagi.</p>
-  </div>
-
-  <!-- Loading Sukses 4 Detik -->
-  <div id="successLoading" style="display:none;">
-    <h2>Membuka Surat Eksklusif...</h2>
-    <div class="success-spinner"></div>
-  </div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyALIhKFz4bpOPmES6t2fAdx8VMPP0ye1wc",
-      authDomain: "rhf-resmi.firebaseapp.com",
-      databaseURL: "https://rhf-resmi-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "rhf-resmi",
-      storageBucket: "rhf-resmi.firebasestorage.app",
-      messagingSenderId: "313439235544",
-      appId: "1:313439235544:web:b19a2ad538e34c1fe516ad"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const codesRef = ref(db, 'accessCodes');
-
-    // Generate Partikel (sama)
-    function createParticles() { /* sama seperti sebelumnya */ }
+  <script>
+    // Generate Partikel
+    function createParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 100; i++) {
+        const p = document.createElement('div');
+        p.classList.add('particle');
+        const size = Math.random() * 15 + 8;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.animationDelay = Math.random() * 30 + 's';
+        p.style.animationDuration = 20 + Math.random() * 20 + 's';
+        container.appendChild(p);
+      }
+    }
     createParticles();
 
-    // DOM Elements
-    const welcome = document.getElementById('welcomeSection');
-    const loading = document.getElementById('loadingSection');
-    const access = document.getElementById('accessSection');
-    const successLoading = document.getElementById('successLoading');
-    const errorMsg = document.getElementById('errorMsg');
+    // Ambil data dari localStorage (dari index.html)
+    const data = JSON.parse(localStorage.getItem('currentCodeData') || '{}');
 
-    // Klik KONFIRM
-    document.getElementById('confirmBtn').addEventListener('click', () => {
-      welcome.style.display = 'none';
-      loading.style.display = 'flex';
-      setTimeout(() => {
-        loading.style.display = 'none';
-        access.style.display = 'block';
-        document.getElementById('accessCode').focus();
-      }, 3000);
-    });
+    document.getElementById('codeDisplay').textContent = data.code || 'KODE RAHASIA';
+    document.getElementById('notesDisplay').textContent = data.notes || 'Selamat, Anda telah membuka undangan eksklusif RHF.';
 
-    // Check Kode Real-Time dari Firebase
-    function validateCode() {
-      const input = document.getElementById('accessCode').value.trim().toUpperCase();
-
-      onValue(codesRef, (snapshot) => {
-        const codes = snapshot.val() || {};
-        let valid = false;
-        let currentCodeData = null;
-
-        Object.values(codes).forEach(item => {
-          if (item.code === input) {
-            valid = true;
-            currentCodeData = item; // Simpan data kode (logo_url, license_url, dll untuk letter.html)
-          }
-        });
-
-        if (valid) {
-          localStorage.setItem('currentCodeData', JSON.stringify(currentCodeData)); // Simpan untuk letter.html
-          access.style.display = 'none';
-          successLoading.style.display = 'flex';
-          setTimeout(() => {
-            window.location.href = 'letter.html';
-          }, 4000);
-        } else {
-          errorMsg.style.display = 'block';
-          setTimeout(() => {
-            errorMsg.style.display = 'none';
-            document.getElementById('accessCode').value = '';
-            document.getElementById('accessCode').focus();
-          }, 3000);
-        }
-      }, { onlyOnce: true }); // Hanya baca sekali untuk efisiensi
+    if (data.logo_url) {
+      const logo = document.getElementById('logoDisplay');
+      logo.src = data.logo_url;
+      logo.style.display = 'block';
     }
 
-    document.getElementById('submitCode').addEventListener('click', validateCode);
-    document.getElementById('accessCode').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') validateCode();
-    });
+    if (data.download_link) {
+      const btn = document.getElementById('downloadBtn');
+      btn.href = data.download_link;
+      btn.style.display = 'inline-block';
+    }
+
+    // Animasi membuka surat setelah load
+    setTimeout(() => {
+      document.getElementById('letterEnvelope').classList.add('open');
+    }, 500);
   </script>
 </body>
 </html>
