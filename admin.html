@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - RHF Exclusive</title>
+  <title>Admin Dashboard - Undangan Eksklusif</title>
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      margin: 0;
       background: linear-gradient(135deg, #0a0a0a, #1e1e1e);
       color: #d4af37;
       font-family: 'Montserrat', sans-serif;
@@ -14,66 +14,116 @@
     }
     .header {
       text-align: center;
-      padding: 40px;
+      padding: 50px 20px;
       border-bottom: 3px solid #d4af37;
+      background: rgba(0,0,0,0.4);
     }
     .header h1 {
-      font-size: 3.5rem;
-      letter-spacing: 5px;
+      font-family: 'Cinzel', serif;
+      font-size: 3.8rem;
+      letter-spacing: 8px;
+      text-shadow: 0 0 20px rgba(212,175,55,0.4);
     }
+    .header p { margin-top: 10px; font-size: 1.3rem; color: #aaa; }
+
     .container {
       max-width: 1200px;
-      margin: 50px auto;
+      margin: 40px auto;
       padding: 20px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 40px;
     }
     .card {
-      background: rgba(20,20,20,0.8);
-      padding: 30px;
-      border-radius: 15px;
+      background: rgba(20,20,20,0.85);
+      padding: 35px;
+      border-radius: 18px;
       border: 2px solid #d4af37;
+      box-shadow: 0 15px 40px rgba(212,175,55,0.15);
+      backdrop-filter: blur(10px);
+    }
+    .card h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.2rem;
       text-align: center;
-      box-shadow: 0 10px 30px rgba(212,175,55,0.2);
+      margin-bottom: 30px;
+      letter-spacing: 4px;
     }
-    .big-number {
-      font-size: 5rem;
-      font-weight: bold;
-      margin: 20px 0;
+
+    label {
+      display: block;
+      margin: 15px 0 8px;
+      font-weight: 500;
+      letter-spacing: 1px;
     }
+    input, textarea {
+      width: 100%;
+      padding: 14px;
+      background: #111;
+      border: 2px solid #d4af37;
+      color: #d4af37;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-family: 'Montserrat', sans-serif;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #ffd700;
+      box-shadow: 0 0 15px rgba(212,175,55,0.4);
+    }
+    textarea { resize: vertical; min-height: 100px; }
+
     .btn {
+      padding: 12px 30px;
       background: #d4af37;
       color: #000;
-      padding: 12px 30px;
       border: none;
-      border-radius: 8px;
-      font-size: 1.2rem;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
       cursor: pointer;
-      margin-top: 20px;
+      margin-top: 15px;
+      transition: all 0.3s;
     }
-    .btn:hover { background: #fff; }
-    .btn-danger {
-      background: #8b0000;
-      margin-left: 10px;
-    }
+    .btn:hover { background: #ffd700; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(212,175,55,0.4); }
+    .btn-danger { background: #8b0000; margin-left: 10px; }
+    .btn-danger:hover { background: #a00000; }
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
-      color: #fff;
     }
     th, td {
       padding: 15px;
+      text-align: left;
       border-bottom: 1px solid #444;
     }
-    th { background: #222; }
+    th { background: #222; font-weight: 600; }
+    .actions button {
+      padding: 8px 15px;
+      margin-right: 8px;
+      font-size: 0.9rem;
+    }
+
+    .status {
+      text-align: center;
+      padding: 15px;
+      font-size: 1.1rem;
+      color: #0f0;
+      background: rgba(0,255,0,0.1);
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Cinzel&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <script>
+    // Konfigurasi Firebase (sama dengan index.html nanti)
     const firebaseConfig = {
       apiKey: "AIzaSyALIhKFz4bpOPmES6t2fAdx8VMPP0ye1wc",
       authDomain: "rhf-resmi.firebaseapp.com",
@@ -85,60 +135,166 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const opensRef = db.ref('opens');
-    const historyRef = db.ref('history');
 
-    function updateDashboard() {
-      opensRef.on('value', (snap) => {
-        document.getElementById('totalOpens').textContent = snap.val() || 0;
-      });
+    // Referensi data
+    const configRef = db.ref('config');
+    const codesRef = db.ref('accessCodes');
 
-      historyRef.limitToLast(10).on('value', (snap) => {
+    // Load semua data saat halaman dibuka
+    window.onload = () => {
+      loadConfig();
+      loadCodes();
+      document.getElementById('status').textContent = 'Terhubung ke server — Semua perubahan real-time';
+    };
+
+    // === KELOLA TEKS & KONFIGURASI ===
+    function loadConfig() {
+      configRef.on('value', (snap) => {
         const data = snap.val() || {};
-        const tbody = document.getElementById('historyBody');
+        document.getElementById('mainTitle').value = data.mainTitle || "CONFIRM UNTUK MEMBUKA\nUNDANGAN EKSKLUSIF";
+        document.getElementById('mainSubtitle').value = data.mainSubtitle || "Klik di area ini untuk melanjutkan";
+        document.getElementById('formTitle').value = data.formTitle || "MASUKKAN KODE AKSES";
+        document.getElementById('formDesc').value = data.formDesc || "Undangan ini hanya untuk tamu terpilih.\nMasukkan kode eksklusif yang telah diberikan kepada Anda.";
+        document.getElementById('inputPlaceholder').value = data.inputPlaceholder || "XXXX-XXXX";
+        document.getElementById('buttonText').value = data.buttonText || "BUKA UNDANGAN";
+        document.getElementById('errorMessage').value = data.errorMessage || "Kode salah! Silakan coba lagi.";
+      });
+    }
+
+    function saveConfig() {
+      const config = {
+        mainTitle: document.getElementById('mainTitle').value,
+        mainSubtitle: document.getElementById('mainSubtitle').value,
+        formTitle: document.getElementById('formTitle').value,
+        formDesc: document.getElementById('formDesc').value,
+        inputPlaceholder: document.getElementById('inputPlaceholder').value,
+        buttonText: document.getElementById('buttonText').value,
+        errorMessage: document.getElementById('errorMessage').value,
+        updatedAt: Date.now()
+      };
+      configRef.set(config).then(() => {
+        alert('✅ Konfigurasi teks berhasil disimpan!');
+      });
+    }
+
+    // === KELOLA KODE AKSES ===
+    function loadCodes() {
+      codesRef.on('value', (snap) => {
+        const codes = snap.val() || {};
+        const tbody = document.getElementById('codesBody');
         tbody.innerHTML = '';
-        Object.keys(data).reverse().forEach(key => {
+        Object.keys(codes).forEach(key => {
+          const code = codes[key];
           const row = document.createElement('tr');
-          row.innerHTML = `<td>\( {key}</td><td> \){new Date(parseInt(data[key])).toLocaleString('id-ID')}</td>`;
+          row.innerHTML = `
+            <td><strong>${code}</strong></td>
+            <td class="actions">
+              <button class="btn btn-danger" onclick="deleteCode('${key}')">HAPUS</button>
+            </td>
+          `;
           tbody.appendChild(row);
         });
       });
     }
 
-    function resetCounter() {
-      if (confirm('Yakin reset total opens ke 0? Semua history juga akan dihapus.')) {
-        opensRef.set(0);
-        historyRef.remove();
+    function addCode() {
+      const newCode = document.getElementById('newCode').value.trim().toUpperCase();
+      if (!newCode) {
+        alert('Masukkan kode akses terlebih dahulu!');
+        return;
+      }
+      if (newCode.length < 4) {
+        alert('Kode terlalu pendek!');
+        return;
+      }
+      codesRef.push(newCode).then(() => {
+        document.getElementById('newCode').value = '';
+        alert('✅ Kode baru berhasil ditambahkan!');
+      });
+    }
+
+    function deleteCode(key) {
+      if (confirm('Yakin hapus kode ini?')) {
+        codesRef.child(key).remove().then(() => {
+          alert('Kode berhasil dihapus');
+        });
       }
     }
 
-    window.onload = updateDashboard;
+    // Reset semua (opsional, hati-hati)
+    function resetAll() {
+      if (confirm('⚠️ YAKIN RESET SEMUA DATA? Ini akan menghapus semua kode dan konfigurasi!')) {
+        if (confirm('Ketik "RESET SEMUA" untuk konfirmasi')) {
+          configRef.remove();
+          codesRef.remove();
+          alert('Semua data telah direset');
+        }
+      }
+    }
   </script>
 </head>
 <body>
+
   <div class="header">
-    <h1>RHF ADMIN DASHBOARD</h1>
-    <p>Monitoring Akses Surat Eksklusif</p>
+    <h1>ADMIN DASHBOARD</h1>
+    <p>Kelola Undangan Eksklusif Secara Real-Time</p>
   </div>
+
+  <div id="status" class="status">Memuat...</div>
 
   <div class="container">
+
+    <!-- Pengaturan Teks -->
     <div class="card">
-      <h2>Total Pembukaan Surat</h2>
-      <div class="big-number" id="totalOpens">0</div>
-      <button class="btn btn-danger" onclick="resetCounter()">RESET COUNTER</button>
+      <h2>Pengaturan Teks & Tampilan</h2>
+      
+      <label>Judul Utama (di halaman awal)</label>
+      <textarea id="mainTitle"></textarea>
+
+      <label>Subtitle (di bawah judul)</label>
+      <input type="text" id="mainSubtitle">
+
+      <label>Judul Form Kode Akses</label>
+      <input type="text" id="formTitle">
+
+      <label>Deskripsi Form</label>
+      <textarea id="formDesc"></textarea>
+
+      <label>Placeholder Input Kode</label>
+      <input type="text" id="inputPlaceholder">
+
+      <label>Teks Tombol</label>
+      <input type="text" id="buttonText">
+
+      <label>Pesan Error (kode salah)</label>
+      <input type="text" id="errorMessage">
+
+      <button class="btn" onclick="saveConfig()" style="width:100%;">SIMPAN SEMUA PERUBAHAN</button>
     </div>
 
+    <!-- Kelola Kode Akses -->
     <div class="card">
-      <h2>Riwayat 10 Pembukaan Terakhir</h2>
+      <h2>Kelola Kode Akses</h2>
+      
+      <label>Tambah Kode Baru</label>
+      <input type="text" id="newCode" placeholder="Contoh: VIP-2026" style="text-transform: uppercase;">
+      <button class="btn" onclick="addCode()" style="width:100%;">TAMBAH KODE</button>
+
       <table>
         <thead>
-          <tr><th>No</th><th>Waktu Akses</th></tr>
+          <tr><th>Kode Akses</th><th>Aksi</th></tr>
         </thead>
-        <tbody id="historyBody">
-          <!-- Diisi otomatis -->
+        <tbody id="codesBody">
+          <!-- Diisi otomatis dari Firebase -->
         </tbody>
       </table>
+
+      <div style="margin-top: 30px; text-align: center;">
+        <button class="btn btn-danger" onclick="resetAll()">RESET SEMUA DATA</button>
+      </div>
     </div>
+
   </div>
+
 </body>
 </html>
