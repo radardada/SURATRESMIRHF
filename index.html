@@ -14,6 +14,7 @@
       justify-content: center;
       font-family: 'Cinzel', serif;
       color: #d4af37;
+      overflow: hidden;
     }
     .container {
       text-align: center;
@@ -34,22 +35,135 @@
       margin-top: 50px;
       color: #aaa;
     }
+
+    /* Loading Spinner */
+    .loader {
+      display: none;
+      border: 8px solid #333;
+      border-top: 8px solid #d4af37;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      animation: spin 1.5s linear infinite;
+      margin: 40px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Form Kode Akses */
+    .access-form {
+      display: none;
+      margin-top: 50px;
+    }
+    input[type="text"] {
+      padding: 15px;
+      font-size: 1.2rem;
+      width: 250px;
+      border: 2px solid #d4af37;
+      background: #111;
+      color: #d4af37;
+      text-align: center;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 12px 30px;
+      font-size: 1.2rem;
+      background: transparent;
+      border: 2px solid #d4af37;
+      color: #d4af37;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+    button:hover {
+      background: #d4af37;
+      color: #000;
+    }
+    .error {
+      color: #ff6b6b;
+      margin-top: 10px;
+      display: none;
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="container" id="clickArea">
-    <h1>CONFIRM 2 KLIK<br>UNTUK MEMBUKA SURAT</h1>
-    <p id="counter">Klik remaining: 2</p>
+    <h1>CONFIRM UNTUK MEMBUKA<br>UNDANGAN EKSKLUSIF</h1>
+    <p>Klik di area ini untuk melanjutkan</p>
+  </div>
+
+  <!-- Loading -->
+  <div id="loadingSection" style="display: none; text-align: center;">
+    <h2 style="font-size: 2rem;">Memverifikasi...</h2>
+    <div class="loader"></div>
+    <p style="color: #aaa;">Harap tunggu sebentar</p>
+  </div>
+
+  <!-- Form Kode Akses -->
+  <div id="accessSection" class="access-form">
+    <h2>Masukkan Kode Akses</h2>
+    <p style="color: #aaa; max-width: 400px; margin: 20px auto;">
+      Undangan ini hanya untuk tamu terpilih. Masukkan kode yang telah diberikan.
+    </p>
+    <input type="text" id="accessCode" placeholder="XXXX-XXXX" maxlength="9">
+    <br>
+    <button id="submitCode">BUKA UNDANGAN</button>
+    <p class="error" id="errorMsg">Kode salah! Silakan coba lagi.</p>
   </div>
 
   <script>
-    let clicks = 0;
-    document.getElementById('clickArea').addEventListener('click', () => {
-      clicks++;
-      document.getElementById('counter').textContent = `Klik remaining: ${2 - clicks}`;
-      if (clicks >= 2) {
+    const validCodes = [
+      "GOLD-2025",
+      "VIP-1234",
+      "EXCL-9999",
+      "TAMU-VIP",
+      "RAHASIA1"
+      // Nanti kode-kode ini bisa di-manage lewat admin.html
+    ];
+
+    let confirmed = false;
+
+    document.getElementById('clickArea').addEventListener('click', function() {
+      if (confirmed) return;
+      confirmed = true;
+
+      // Sembunyikan klik area
+      document.getElementById('clickArea').style.display = 'none';
+      
+      // Tampilkan loading
+      document.getElementById('loadingSection').style.display = 'block';
+
+      // Simulasi loading 2.5 detik
+      setTimeout(() => {
+        document.getElementById('loadingSection').style.display = 'none';
+        document.getElementById('accessSection').style.display = 'block';
+      }, 2500);
+    });
+
+    document.getElementById('submitCode').addEventListener('click', function() {
+      const input = document.getElementById('accessCode').value.trim().toUpperCase();
+      const formatted = input.replace(/[^A-Z0-9]/g, '-'); // Normalisasi
+
+      if (validCodes.includes(input) || validCodes.includes(formatted)) {
         window.location.href = 'letter.html';
+      } else {
+        document.getElementById('errorMsg').style.display = 'block';
+        document.getElementById('accessCode').style.borderColor = '#ff6b6b';
+        setTimeout(() => {
+          document.getElementById('errorMsg').style.display = 'none';
+          document.getElementById('accessCode').style.borderColor = '#d4af37';
+        }, 3000);
+      }
+    });
+
+    // Enter key support
+    document.getElementById('accessCode').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        document.getElementById('submitCode').click();
       }
     });
   </script>
