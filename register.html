@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register Akun - RHF</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
@@ -69,85 +69,79 @@
   </div>
 
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getDatabase, ref, push, set, query, orderByChild, equalTo, get } 
+      from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
-  <script>
-    // Konfigurasi Firebase milikmu (rhf-resmi)
+    // Config milikmu (rhf-gamestore)
     const firebaseConfig = {
       apiKey: "AIzaSyAyHSaALeuwibcF22VNL_6WDlcZepcDB3A",
       authDomain: "rhf-gamestore.firebaseapp.com",
       databaseURL: "https://rhf-gamestore-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "rhf-gamestore",
-      storageBucket: "rhf-gamestore.appspot.com",
+      storageBucket: "rhf-gamestore.firebasestorage.app",
       messagingSenderId: "52065906934",
       appId: "1:52065906934:web:c15f0eff91cc937f787cd7",
       measurementId: "G-RYFR9D5R5H"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    function showError(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
 
     function validateForm() {
       let valid = true;
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
       const confirm = document.getElementById('confirmPassword').value;
-
       document.querySelectorAll('.error').forEach(e => e.style.display = 'none');
 
-      if (username === '') {
-        document.getElementById('usernameError').textContent = 'Username wajib diisi!';
-        document.getElementById('usernameError').style.display = 'block';
-        valid = false;
-      } else if (username.length < 4) {
-        document.getElementById('usernameError').textContent = 'Username minimal 4 karakter!';
-        document.getElementById('usernameError').style.display = 'block';
+      if (username === '' || username.length < 4) {
+        showError('usernameError','Username minimal 4 karakter!');
         valid = false;
       }
-      if (password === '') {
-        document.getElementById('passwordError').textContent = 'Password wajib diisi!';
-        document.getElementById('passwordError').style.display = 'block';
-        valid = false;
-      } else if (password.length < 6) {
-        document.getElementById('passwordError').textContent = 'Password minimal 6 karakter!';
-        document.getElementById('passwordError').style.display = 'block';
+      if (password === '' || password.length < 6) {
+        showError('passwordError','Password minimal 6 karakter!');
         valid = false;
       }
       if (password !== confirm) {
-        document.getElementById('confirmError').textContent = 'Password tidak sama!';
-        document.getElementById('confirmError').style.display = 'block';
+        showError('confirmError','Password tidak sama!');
         valid = false;
       }
-
       return valid;
     }
 
-    function register() {
+    async function register() {
       if (!validateForm()) return;
-
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
 
-      db.ref('users').orderByChild('username').equalTo(username).once('value')
-        .then(snapshot => {
-          if (snapshot.exists()) {
-            document.getElementById('usernameError').textContent = 'Username sudah digunakan!';
-            document.getElementById('usernameError').style.display = 'block';
-          } else {
-            db.ref('users').push({
-              username: username,
-              password: password,
-              saldo: 0,
-              frozen: false,
-              registeredAt: Date.now()
-            }).then(() => {
-              alert('Akun berhasil dibuat! Silakan login.');
-              window.location.href = 'login.html';
-            }).catch(err => alert('Error: ' + err.message));
-          }
+      const q = query(ref(db,'users'), orderByChild('username'), equalTo(username));
+      const snapshot = await get(q);
+
+      if (snapshot.exists()) {
+        showError('usernameError','Username sudah digunakan!');
+      } else {
+        const newUserRef = push(ref(db,'users'));
+        await set(newUserRef,{
+          username: username,
+          password: password,
+          saldo: 0,
+          frozen: false,
+          registeredAt: Date.now()
         });
+        alert('Akun berhasil dibuat! Silakan login.');
+        window.location.href = 'login.html';
+      }
     }
+
+    window.register = register;
   </script>
 
 </body>
