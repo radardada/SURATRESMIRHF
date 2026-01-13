@@ -78,8 +78,8 @@
   <!-- Firebase & Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getDatabase, ref, push, set, update, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
+    import { getDatabase, ref, push, set, update, onValue, remove } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
 
     // Konfigurasi Firebase
     const firebaseConfig = {
@@ -129,6 +129,7 @@
           developer,
           category,
           apk_url: apkUrl,
+          storage_path: filePath,
           rating: 0,
           downloads: 0,
           created_at: Date.now()
@@ -153,16 +154,23 @@
             <td>${app.category}</td>
             <td>${app.rating}</td>
             <td>${app.downloads}</td>
-            <td><button class="btn btn-danger" onclick="deleteApp('${id}')">Delete</button></td>
+            <td><button class="btn btn-danger" onclick="deleteApp('${id}', '${app.storage_path}')">Delete</button></td>
           </tr>
         `;
       });
     });
 
-    // Hapus aplikasi
-    window.deleteApp = async (id) => {
-      await update(ref(db, "apps/" + id), null);
-      toast("Aplikasi dihapus.");
+    // Hapus aplikasi (DB + Storage)
+    window.deleteApp = async (id, storagePath) => {
+      try {
+        if (storagePath) {
+          await deleteObject(storageRef(storage, storagePath));
+        }
+        await remove(ref(db, "apps/" + id));
+        toast("Aplikasi dihapus.");
+      } catch (err) {
+        toast("Gagal hapus: " + err.message);
+      }
     };
 
     // Update saldo user
