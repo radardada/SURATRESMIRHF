@@ -1,80 +1,45 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RHF SETORS - Top Up Games & Voucher Murah</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/header.css">
-    <link rel="stylesheet" href="css/footer.css">
-    <style>
-        /* Hero section dengan gradient biru-hijau */
-        #hero {
-            background: linear-gradient(to bottom, #007bff, #00c6ff, #28a745);
-            color: white;
-            text-align: center;
-            padding: 60px 20px;
-        }
-        #hero h2 {
-            font-size: 48px;
-            margin: 0 0 20px;
-        }
-        #hero p {
-            font-size: 24px;
-            margin: 0 0 20px;
-            opacity: 0.9;
-        }
-        #hero .subtext {
-            font-size: 20px;
-            margin: 20px 0 40px;
-            opacity: 0.9;
-        }
-        #hero input {
-            width: 80%;
-            max-width: 600px;
-            padding: 20px;
-            font-size: 18px;
-            border-radius: 50px;
-            border: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RHF AppStore</title>
+  <link rel="stylesheet" href="./assets/style.css">
 </head>
 <body>
-    <header>
-        <div class="logo-header">
-            <img src="images/logo.png" alt="RHF SETORS Logo" style="height:80px; margin-right:20px;">
-            <h1 style="margin:0; font-size:40px; line-height:80px;">RHF SETORS</h1>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-title">RHF AppStore</span>
+        <span class="brand-sub">Toko Aplikasi Real-Time</span>
+      </div>
+      <div class="toolbar">
+        <div class="search">
+          <input type="text" id="searchInput" placeholder="Cari aplikasi...">
         </div>
+        <select id="categorySelect" class="select">
+          <option value="All">Semua Kategori</option>
+          <option value="Games">Games</option>
+          <option value="Tools">Tools</option>
+          <option value="Productivity">Productivity</option>
+          <option value="Social">Social</option>
+          <option value="Entertainment">Entertainment</option>
+        </select>
+      </div>
+    </div>
+  </header>
 
-        <div class="menu-items">
-            <a href="#promo">News & Promo</a>
-            <a href="#search">Cari Game</a>
-            <a href="#contact">Kontak Kami</a>
-            <a href="admin.html">Admin</a>
-        </div>
-    </header>
+  <!-- Container -->
+  <main class="container">
+    <div id="appList" class="grid"></div>
+    <div id="pager"></div>
+  </main>
 
-    <main>
-        <section id="hero">
-            <h2>Top Up Games & Voucher</h2>
-            <h2 style="font-size:48px; margin:0;">Murah, Aman, Cepat</h2>
-            <p class="subtext">Top Up Games Voucher Lebih Murah 20%, Cepat, dan Aman. Tanpa login, langsung terisi!</p>
-            <input type="text" id="game-search" placeholder="Cari game atau voucher...">
-        </section>
+  <!-- Toast -->
+  <div id="toast"></div>
 
-        <section id="popular">
-            <h2 style="text-align:center; color:#007bff; font-size:36px; margin:60px 0 40px;">TOP UP GAME</h2>
-            <div id="popular-games" class="game-list"></div>
-        </section>
-
-        <!-- Section lain kalau ada -->
-    </main>
-
-    <footer>
-        <p>&copy; 2026 RHF SETORS. All rights reserved.</p>
-    </footer>
-
-    <script type="module" src="js/games.js"></script>
+  <!-- Firebase & Script -->
+  <script type="module" src="./assets/script.js"></script>
 </body>
 </html>
