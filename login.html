@@ -63,72 +63,62 @@
     </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<!-- Firebase SDK -->
+<script type="module">
+  // Import modul Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { getDatabase, ref, query, orderByChild, equalTo, get } 
+    from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
-  <script>
-    // Konfigurasi Firebase milikmu (rhf-resmi)
-    const firebaseConfig = {
-      apiKey: "AIzaSyAyHSaALeuwibcF22VNL_6WDlcZepcDB3A",
-      authDomain: "rhf-gamestore.firebaseapp.com",
-      databaseURL: "https://rhf-gamestore-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "rhf-gamestore",
-      storageBucket: "rhf-gamestore.appspot.com",
-      messagingSenderId: "52065906934",
-      appId: "1:52065906934:web:c15f0eff91cc937f787cd7",
-      measurementId: "G-RYFR9D5R5H"
-    };
+  // Config milikmu
+  const firebaseConfig = {
+    apiKey: "AIzaSyAyHSaALeuwibcF22VNL_6WDlcZepcDB3A",
+    authDomain: "rhf-gamestore.firebaseapp.com",
+    databaseURL: "https://rhf-gamestore-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "rhf-gamestore",
+    storageBucket: "rhf-gamestore.firebasestorage.app",
+    messagingSenderId: "52065906934",
+    appId: "1:52065906934:web:c15f0eff91cc937f787cd7",
+    measurementId: "G-RYFR9D5R5H"
+  };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+  // Inisialisasi Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-    function validateForm() {
-      let valid = true;
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-      document.querySelectorAll('.error').forEach(e => e.style.display = 'none');
-      if (username === '') {
-        document.getElementById('usernameError').textContent = 'Username wajib diisi!';
-        document.getElementById('usernameError').style.display = 'block';
-        valid = false;
-      }
-      if (password === '') {
-        document.getElementById('passwordError').textContent = 'Password wajib diisi!';
-        document.getElementById('passwordError').style.display = 'block';
-        valid = false;
-      }
-      return valid;
+  // Fungsi login
+  async function login() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (!username || !password) {
+      alert("Username dan password wajib diisi!");
+      return;
     }
 
-    function login() {
-      if (!validateForm()) return;
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
+    const q = query(ref(db, 'users'), orderByChild('username'), equalTo(username));
+    const snapshot = await get(q);
 
-      db.ref('users').orderByChild('username').equalTo(username).once('value')
-        .then(snapshot => {
-          if (snapshot.exists()) {
-            let userData = null, userKey = null;
-            snapshot.forEach(child => { userData = child.val(); userKey = child.key; });
-            if (userData.password === password) {
-              localStorage.setItem('userKey', userKey);
-              localStorage.setItem('username', username);
-              localStorage.setItem('saldo', userData.saldo || 0);
-              alert('Login berhasil! Selamat datang ' + username);
-              window.location.href = 'index.html';
-            } else {
-              document.getElementById('passwordError').textContent = 'Password salah!';
-              document.getElementById('passwordError').style.display = 'block';
-            }
-          } else {
-            document.getElementById('usernameError').textContent = 'Username tidak ditemukan!';
-            document.getElementById('usernameError').style.display = 'block';
-          }
-        })
-        .catch(err => alert('Error: ' + err.message));
+    if (snapshot.exists()) {
+      let userData = null, userKey = null;
+      snapshot.forEach(child => { userData = child.val(); userKey = child.key; });
+      if (userData.password === password) {
+        localStorage.setItem('userKey', userKey);
+        localStorage.setItem('username', username);
+        localStorage.setItem('saldo', userData.saldo || 0);
+        alert('Login berhasil! Selamat datang ' + username);
+        window.location.href = 'index.html';
+      } else {
+        alert("Password salah!");
+      }
+    } else {
+      alert("Username tidak ditemukan!");
     }
-  </script>
+  }
+
+  // Hubungkan ke tombol
+  window.login = login;
+</script>
 
 </body>
 </html>
