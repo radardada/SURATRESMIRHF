@@ -65,7 +65,6 @@
             <th>Nama</th>
             <th>Email</th>
             <th>Saldo</th>
-            <th>Aksi</th>
           </tr>
         </thead>
         <tbody id="userTableBody"></tbody>
@@ -73,29 +72,125 @@
     </div>
   </main>
 
-  <!-- Modal Edit App -->
-  <div id="editModal">
-    <div class="modal-card">
-      <div class="modal-head">
-        <span class="modal-title">Edit Aplikasi</span>
-        <button id="editCancel" class="btn btn-small">✖</button>
-      </div>
-      <div class="modal-body">
-        <input type="text" id="editName" class="input" placeholder="Nama Aplikasi">
-        <input type="text" id="editDeveloper" class="input" placeholder="Developer">
-        <input type="text" id="editCategory" class="input" placeholder="Kategori">
-        <input type="number" id="editRating" class="input" placeholder="Rating">
-      </div>
-      <div class="modal-actions">
-        <button id="editSave" class="btn btn-primary">Simpan</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Toast -->
   <div id="toast"></div>
 
   <!-- Firebase & Script -->
-  <script type="module" src="./assets/script.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, push, set, update, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
+
+    // Konfigurasi Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAyHSaALeuwibcF22VNL_6WDlcZepcDB3A",
+      authDomain: "rhf-gamestore.firebaseapp.com",
+      databaseURL: "https://rhf-gamestore-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "rhf-gamestore",
+      storageBucket: "rhf-gamestore.appspot.com",
+      messagingSenderId: "52065906934",
+      appId: "1:52065906934:web:c15f0eff91cc937f787cd7",
+      measurementId: "G-RYFR9D5R5H"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const storage = getStorage(app);
+
+    const toast = (msg) => {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.style.opacity = 1;
+      setTimeout(() => (t.style.opacity = 0), 2500);
+    };
+
+    // Upload APK (banyak sekaligus)
+    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("appName").value.trim();
+      const developer = document.getElementById("developer").value.trim();
+      const category = document.getElementById("category").value.trim();
+      const files = document.getElementById("apkFile").files;
+
+      if (!files.length) {
+        toast("Pilih minimal satu file APK.");
+        return;
+      }
+
+      for (const file of files) {
+        const filePath = `apk/${Date.now()}_${file.name}`;
+        const fRef = storageRef(storage, filePath);
+        await uploadBytes(fRef, file);
+        const apkUrl = await getDownloadURL(fRef);
+
+        const newAppRef = push(ref(db, "apps"));
+        await set(newAppRef, {
+          name,
+          developer,
+          category,
+          apk_url: apkUrl,
+          rating: 0,
+          downloads: 0,
+          created_at: Date.now()
+        });
+      }
+
+      toast("APK berhasil diunggah!");
+      e.target.reset();
+    });
+
+    // Render daftar aplikasi real-time
+    onValue(ref(db, "apps"), (snapshot) => {
+      const apps = snapshot.val() || {};
+      const tbody = document.getElementById("appTableBody");
+      tbody.innerHTML = "";
+      Object.entries(apps).forEach(([id, app]) => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${id}</td>
+            <td>${app.name}</td>
+            <td>${app.developer}</td>
+            <td>${app.category}</td>
+            <td>${app.rating}</td>
+            <td>${app.downloads}</td>
+            <td><button class="btn btn-danger" onclick="deleteApp('${id}')">Delete</button></td>
+          </tr>
+        `;
+      });
+    });
+
+    // Hapus aplikasi
+    window.deleteApp = async (id) => {
+      await update(ref(db, "apps/" + id), null);
+      toast("Aplikasi dihapus.");
+    };
+
+    // Update saldo user
+    document.getElementById("saldoForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const userId = document.getElementById("userId").value.trim();
+      const newSaldo = parseInt(document.getElementById("newSaldo").value);
+      await update(ref(db, "users/" + userId), { saldo: newSaldo });
+      toast("Saldo user diperbarui.");
+      e.target.reset();
+    });
+
+    // Render daftar user real-time
+    onValue(ref(db, "users"), (snapshot) => {
+      const users = snapshot.val() || {};
+      const tbody = document.getElementById("userTableBody");
+      tbody.innerHTML = "";
+      Object.entries(users).forEach(([id, user]) => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${id}</td>
+            <td>${user.name || "-"}</td>
+            <td>${user.email || "-"}</td>
+            <td>${user.saldo || 0}</td>
+          </tr>
+        `;
+      });
+    });
+  </script>
 </body>
 </html>
