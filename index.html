@@ -4,42 +4,151 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RHF AppStore</title>
-  <link rel="stylesheet" href="./assets/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Poppins',sans-serif; background:#f5f5f5; color:#333; }
+    header {
+      background:linear-gradient(90deg,#00c6ff,#0072ff);
+      padding:16px;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    header .brand { font-size:22px; font-weight:700; }
+    header .search { flex:1; margin:0 16px; }
+    header .search input {
+      width:100%; padding:10px; border:none; border-radius:8px;
+    }
+    header .actions { display:flex; align-items:center; gap:12px; }
+    header .actions a {
+      background:#fff; color:#0072ff; padding:8px 16px;
+      border-radius:20px; text-decoration:none; font-weight:600;
+    }
+    nav {
+      background:#fff; display:flex; overflow-x:auto; padding:10px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.1);
+    }
+    nav a {
+      flex:0 0 auto; margin-right:12px; padding:8px 16px;
+      border-radius:20px; background:#eee; color:#333;
+      text-decoration:none; font-weight:500;
+    }
+    nav a.active { background:#0072ff; color:#fff; }
+    main { padding:20px; }
+    .section-title {
+      font-size:20px; font-weight:600; margin-bottom:12px; color:#0072ff;
+    }
+    .grid {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+      gap:16px;
+    }
+    .card {
+      background:#fff; border-radius:12px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+      overflow:hidden; transition:transform 0.2s;
+    }
+    .card:hover { transform:translateY(-4px); }
+    .card img { width:100%; height:120px; object-fit:cover; }
+    .card .info { padding:12px; }
+    .card .info h3 { font-size:16px; font-weight:600; margin-bottom:6px; }
+    .card .info p { font-size:14px; color:#666; }
+    .empty {
+      text-align:center; color:#999; font-size:16px; padding:40px;
+    }
+    footer {
+      background:#0072ff; color:#fff; text-align:center;
+      padding:16px; margin-top:20px;
+    }
+  </style>
 </head>
 <body>
-  <!-- Header -->
-  <header class="header">
-    <div class="header-inner">
-      <div class="brand">
-        <span class="brand-title">RHF AppStore</span>
-        <span class="brand-sub">Toko Aplikasi Real-Time</span>
-      </div>
-      <div class="toolbar">
-        <div class="search">
-          <input type="text" id="searchInput" placeholder="Cari aplikasi...">
-        </div>
-        <select id="categorySelect" class="select">
-          <option value="All">Semua Kategori</option>
-          <option value="Games">Games</option>
-          <option value="Tools">Tools</option>
-          <option value="Productivity">Productivity</option>
-          <option value="Social">Social</option>
-          <option value="Entertainment">Entertainment</option>
-        </select>
-      </div>
+  <header>
+    <div class="brand">RHF AppStore</div>
+    <div class="search">
+      <input type="text" placeholder="Cari aplikasi & game...">
+    </div>
+    <div class="actions">
+      <a href="login.html">Login</a>
     </div>
   </header>
 
-  <!-- Container -->
-  <main class="container">
-    <div id="appList" class="grid"></div>
-    <div id="pager"></div>
+  <nav>
+    <a href="#" class="active">Beranda</a>
+    <a href="#">Game</a>
+    <a href="#">Aplikasi</a>
+    <a href="#">Film</a>
+    <a href="#">Buku</a>
+  </nav>
+
+  <main>
+    <section>
+      <h2 class="section-title">Rekomendasi untuk Anda</h2>
+      <div id="recommendGrid" class="grid"></div>
+      <div id="emptyRecommend" class="empty">Belum ada aplikasi tersedia</div>
+    </section>
+
+    <section style="margin-top:30px;">
+      <h2 class="section-title">Game Populer</h2>
+      <div id="gameGrid" class="grid"></div>
+      <div id="emptyGame" class="empty">Belum ada game tersedia</div>
+    </section>
   </main>
 
-  <!-- Toast -->
-  <div id="toast"></div>
+  <footer>
+    © 2026 RHF AppStore - Terinspirasi dari Google Play Store
+  </footer>
 
-  <!-- Firebase & Script -->
-  <script type="module" src="./assets/script.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAyHSaALeuwibcF22VNL_6WDlcZepcDB3A",
+      authDomain: "rhf-gamestore.firebaseapp.com",
+      databaseURL: "https://rhf-gamestore-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "rhf-gamestore",
+      storageBucket: "rhf-gamestore.appspot.com",
+      messagingSenderId: "52065906934",
+      appId: "1:52065906934:web:c15f0eff91cc937f787cd7",
+      measurementId: "G-RYFR9D5R5H"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const recommendGrid = document.getElementById("recommendGrid");
+    const emptyRecommend = document.getElementById("emptyRecommend");
+    const gameGrid = document.getElementById("gameGrid");
+    const emptyGame = document.getElementById("emptyGame");
+
+    onValue(ref(db, "apps"), (snapshot) => {
+      const apps = snapshot.val() || {};
+      recommendGrid.innerHTML = "";
+      gameGrid.innerHTML = "";
+      let hasRecommend = false;
+      let hasGame = false;
+      Object.entries(apps).forEach(([id, app]) => {
+        const card = `
+          <div class="card">
+            <img src="https://picsum.photos/200/120?random=${id}" alt="">
+            <div class="info">
+              <h3>${app.name}</h3>
+              <p>Rating ★★★★☆</p>
+            </div>
+          </div>`;
+        if (app.category && app.category.toLowerCase().includes("game")) {
+          gameGrid.innerHTML += card;
+          hasGame = true;
+        } else {
+          recommendGrid.innerHTML += card;
+          hasRecommend = true;
+        }
+      });
+      emptyRecommend.style.display = hasRecommend ? "none" : "block";
+      emptyGame.style.display = hasGame ? "none" : "block";
+    });
+  </script>
 </body>
 </html>
