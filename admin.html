@@ -20,7 +20,6 @@
   </header>
 
   <main class="container" id="adminPanel">
-    <!-- Upload APK -->
     <h2 class="admin-title">Upload Aplikasi</h2>
     <form id="uploadForm" class="form" enctype="multipart/form-data">
       <input type="text" id="appName" class="input" placeholder="Nama Aplikasi" required>
@@ -30,7 +29,6 @@
       <button type="submit" class="btn btn-primary">Upload APK</button>
     </form>
 
-    <!-- Daftar Aplikasi -->
     <h2 class="admin-title mt-16">Daftar Aplikasi</h2>
     <div class="table-wrap">
       <table class="table">
@@ -49,7 +47,6 @@
       </table>
     </div>
 
-    <!-- Manajemen User -->
     <h2 class="admin-title mt-16">Manajemen Pengguna</h2>
     <form id="saldoForm" class="form">
       <input type="text" id="userId" class="input" placeholder="User ID" required>
@@ -62,9 +59,11 @@
         <thead>
           <tr>
             <th>User ID</th>
-            <th>Nama</th>
+            <th>Username</th>
             <th>Email</th>
             <th>Saldo</th>
+            <th>Status</th>
+            <th>Aksi</th>
           </tr>
         </thead>
         <tbody id="userTableBody"></tbody>
@@ -72,16 +71,13 @@
     </div>
   </main>
 
-  <!-- Toast -->
   <div id="toast"></div>
 
-  <!-- Firebase & Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getDatabase, ref, push, set, update, onValue, remove } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { getDatabase, ref, push, set, update, onValue, remove, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
 
-    // Konfigurasi Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAyHSaALeuwibcF22VNL_6WDlcZepcDB3A",
       authDomain: "rhf-gamestore.firebaseapp.com",
@@ -104,43 +100,24 @@
       setTimeout(() => (t.style.opacity = 0), 2500);
     };
 
-    // Upload APK (banyak sekaligus)
     document.getElementById("uploadForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = document.getElementById("appName").value.trim();
       const developer = document.getElementById("developer").value.trim();
       const category = document.getElementById("category").value.trim();
       const files = document.getElementById("apkFile").files;
-
-      if (!files.length) {
-        toast("Pilih minimal satu file APK.");
-        return;
-      }
-
+      if (!files.length) { toast("Pilih minimal satu file APK."); return; }
       for (const file of files) {
         const filePath = `apk/${Date.now()}_${file.name}`;
         const fRef = storageRef(storage, filePath);
         await uploadBytes(fRef, file);
         const apkUrl = await getDownloadURL(fRef);
-
         const newAppRef = push(ref(db, "apps"));
-        await set(newAppRef, {
-          name,
-          developer,
-          category,
-          apk_url: apkUrl,
-          storage_path: filePath,
-          rating: 0,
-          downloads: 0,
-          created_at: Date.now()
-        });
+        await set(newAppRef, { name, developer, category, apk_url: apkUrl, storage_path: filePath, rating: 0, downloads: 0, created_at: Date.now() });
       }
-
-      toast("APK berhasil diunggah!");
-      e.target.reset();
+      toast("APK berhasil diunggah!"); e.target.reset();
     });
 
-    // Render daftar aplikasi real-time
     onValue(ref(db, "apps"), (snapshot) => {
       const apps = snapshot.val() || {};
       const tbody = document.getElementById("appTableBody");
@@ -155,35 +132,26 @@
             <td>${app.rating}</td>
             <td>${app.downloads}</td>
             <td><button class="btn btn-danger" onclick="deleteApp('${id}', '${app.storage_path}')">Delete</button></td>
-          </tr>
-        `;
+          </tr>`;
       });
     });
 
-    // Hapus aplikasi (DB + Storage)
     window.deleteApp = async (id, storagePath) => {
       try {
-        if (storagePath) {
-          await deleteObject(storageRef(storage, storagePath));
-        }
+        if (storagePath) await deleteObject(storageRef(storage, storagePath));
         await remove(ref(db, "apps/" + id));
         toast("Aplikasi dihapus.");
-      } catch (err) {
-        toast("Gagal hapus: " + err.message);
-      }
+      } catch (err) { toast("Gagal hapus: " + err.message); }
     };
 
-    // Update saldo user
     document.getElementById("saldoForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const userId = document.getElementById("userId").value.trim();
       const newSaldo = parseInt(document.getElementById("newSaldo").value);
       await update(ref(db, "users/" + userId), { saldo: newSaldo });
-      toast("Saldo user diperbarui.");
-      e.target.reset();
+      toast("Saldo user diperbarui."); e.target.reset();
     });
 
-    // Render daftar user real-time
     onValue(ref(db, "users"), (snapshot) => {
       const users = snapshot.val() || {};
       const tbody = document.getElementById("userTableBody");
@@ -192,13 +160,53 @@
         tbody.innerHTML += `
           <tr>
             <td>${id}</td>
-            <td>${user.name || "-"}</td>
+            <td>${user.username || "-"}</td>
             <td>${user.email || "-"}</td>
             <td>${user.saldo || 0}</td>
-          </tr>
-        `;
+            <td>${user.frozen ? "❄️ Beku" : "Aktif"}</td>
+            <td>
+              <button class="btn btn-small" onclick="freezeUser('${id}', ${!user.frozen})">${user.frozen ? "Unfreeze" : "Freeze"}</button>
+              <button class="btn btn-small btn-primary" onclick="giveSaldo('${id}', 10000)">+10k</button>
+              <button class="btn btn-small btn-danger" onclick="deleteUser('${id}')">Hapus</button>
+              <button class="btn btn-small" onclick="sendMessage('${id}')">Surat</button>
+            </td>
+          </tr>`;
       });
     });
+
+    window.freezeUser = async (id, freeze) => {
+      await update(ref(db, "users/" + id), { frozen: freeze });
+      toast(freeze ? "User dibekukan." : "User diaktifkan.");
+    };
+
+    window.giveSaldo = async (id, amount) => {
+      const snap = await get(ref(db, "users/" + id));
+      const current = snap.val()?.saldo || 0;
+      await update(ref(db, "users/" + id), { saldo: current + amount });
+      toast("Saldo ditambahkan.");
+    };
+
+    window.deleteUser = async (id) => {
+      await remove(ref(db, "users/" + id));
+      toast("User dihapus.");
+    };
+
+    window.sendMessage = async (id) => {
+      const msg = prompt("Masukkan pesan untuk user:");
+      if (msg) {
+        const msgRef = push(ref(db, "users/" + id + "/messages"));
+        await set(msgRef,
+        window.sendMessage = async (id) => {
+      const msg = prompt("Masukkan pesan untuk user:");
+      if (msg) {
+        const msgRef = push(ref(db, "users/" + id + "/messages"));
+        await set(msgRef, {
+          message: msg,
+          sent_at: Date.now()
+        });
+        toast("Pesan dikirim ke user.");
+      }
+    };
   </script>
 </body>
 </html>
