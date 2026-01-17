@@ -2,34 +2,45 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Upload Panel</title>
+  <title>Admin Panel</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>Admin Upload Panel</h1>
-    <p>Unggah file, foto, atau video dengan kode akses dan password</p>
+    <h1>Admin Panel</h1>
+    <p>Kelola file (upload, edit, hapus) dengan kode akses</p>
   </header>
 
   <main>
     <section class="upload-box">
       <input type="file" id="fileInput">
       <input type="text" id="passwordInput" placeholder="Password untuk file">
+      <input type="text" id="codeInput" placeholder="Custom kode (opsional)">
       <button onclick="uploadFile()">Upload</button>
       <p id="status"></p>
     </section>
-  </main>
 
-  <footer>
-    <p>© 2026 RHF Secure Share</p>
-  </footer>
+    <section class="list-box">
+      <h2>Daftar File</h2>
+      <table id="fileTable">
+        <thead>
+          <tr>
+            <th>Kode</th>
+            <th>Nama</th>
+            <th>Password</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+    import { getDatabase, ref, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-    // Firebase Config (isi dengan konfigurasi project kamu)
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -44,7 +55,6 @@
     const storage = getStorage(app);
     const db = getDatabase(app);
 
-    // Generate kode random
     function randomCode(length=6) {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
       return Array.from({length}, () => chars[Math.floor(Math.random()*chars.length)]).join("");
@@ -54,14 +64,14 @@
     window.uploadFile = function() {
       const file = document.getElementById("fileInput").files[0];
       const password = document.getElementById("passwordInput").value;
+      let code = document.getElementById("codeInput").value.trim();
       if (!file || !password) {
         alert("File dan password wajib diisi");
         return;
       }
+      if (!code) code = randomCode();
 
-      const code = randomCode();
       const storageRef = sRef(storage, 'uploads/' + file.name);
-
       uploadBytes(storageRef, file).then(snapshot => {
         getDownloadURL(snapshot.ref).then(url => {
           set(ref(db, 'files/' + code), {
@@ -69,10 +79,45 @@
             url: url,
             password: password
           });
-          document.getElementById("status").textContent = 
-            "Upload sukses. Kode akses: " + code;
+          document.getElementById("status").textContent = "Upload sukses. Kode: " + code;
         });
       });
+    };
+
+    // Render daftar file
+    const fileTableBody = document.querySelector("#fileTable tbody");
+    onValue(ref(db, 'files'), (snapshot) => {
+      const data = snapshot.val();
+      fileTableBody.innerHTML = "";
+      for (let code in data) {
+        const file = data[code];
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${code}</td>
+          <td>${file.name}</td>
+          <td>${file.password}</td>
+          <td>
+            <button onclick="editFile('${code}')">Edit</button>
+            <button onclick="deleteFile('${code}')">Hapus</button>
+          </td>
+        `;
+        fileTableBody.appendChild(row);
+      }
+    });
+
+    // Edit file (ubah password)
+    window.editFile = function(code) {
+      const newPassword = prompt("Masukkan password baru:");
+      if (newPassword) {
+        update(ref(db, 'files/' + code), { password: newPassword });
+      }
+    };
+
+    // Hapus file
+    window.deleteFile = function(code) {
+      if (confirm("Yakin hapus file dengan kode " + code + "?")) {
+        remove(ref(db, 'files/' + code));
+      }
     };
   </script>
 </body>
