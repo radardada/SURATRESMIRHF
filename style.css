@@ -1,63 +1,26 @@
-body {
-  font-family: 'Segoe UI', sans-serif;
-  margin: 0;
-  background: #f4f4f4;
-  color: #333;
+body.lux{
+  background: linear-gradient(135deg,#000,#111);
+  font-family: 'Segoe UI';
+  color: gold;
 }
-
-header {
-  background: #2575fc;
-  color: white;
-  padding: 20px;
-  text-align: center;
+.box{
+  width:300px;
+  margin:120px auto;
+  padding:25px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  border-radius:15px;
+  box-shadow:0 0 20px #000;
+  text-align:center;
 }
-
-main {
-  margin: 30px auto;
-  max-width: 800px;
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+input,button{
+  width:100%;
+  margin:10px 0;
+  padding:10px;
+  border:none;
+  border-radius:8px;
 }
-
-.upload-box, .list-box {
-  margin-bottom: 30px;
-}
-
-input {
-  display: block;
-  margin: 10px auto;
-  padding: 10px;
-  width: 90%;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-button {
-  padding: 8px 15px;
-  background: #6a11cb;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #2575fc;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: center;
-}
-
-th {
-  background: #eee;
+button{
+  background:gold;
+  cursor:pointer;
 }
