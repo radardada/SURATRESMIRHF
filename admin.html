@@ -41,13 +41,13 @@
     import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
     import { getDatabase, ref, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-    // Pakai API config kamu
+    // Config dari project kamu (perbaikan storageBucket)
     const firebaseConfig = {
       apiKey: "AIzaSyAyHSaALeuwibcF22VNL_6WDlcZepcDB3A",
       authDomain: "rhf-gamestore.firebaseapp.com",
       databaseURL: "https://rhf-gamestore-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "rhf-gamestore",
-      storageBucket: "rhf-gamestore.firebasestorage.app",
+      storageBucket: "rhf-gamestore.appspot.com", // ← perbaikan
       messagingSenderId: "52065906934",
       appId: "1:52065906934:web:c15f0eff91cc937f787cd7",
       measurementId: "G-RYFR9D5R5H"
