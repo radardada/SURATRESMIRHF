@@ -41,13 +41,13 @@
     import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
     import { getDatabase, ref, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-    // Config dari project kamu (perbaikan storageBucket)
+    // Config Firebase project kamu
     const firebaseConfig = {
       apiKey: "AIzaSyAyHSaALeuwibcF22VNL_6WDlcZepcDB3A",
       authDomain: "rhf-gamestore.firebaseapp.com",
       databaseURL: "https://rhf-gamestore-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "rhf-gamestore",
-      storageBucket: "rhf-gamestore.appspot.com", // ← perbaikan
+      storageBucket: "rhf-gamestore.appspot.com", // sudah diperbaiki
       messagingSenderId: "52065906934",
       appId: "1:52065906934:web:c15f0eff91cc937f787cd7",
       measurementId: "G-RYFR9D5R5H"
@@ -57,11 +57,13 @@
     const storage = getStorage(app);
     const db = getDatabase(app);
 
+    // Generate kode random
     function randomCode(length=6) {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
       return Array.from({length}, () => chars[Math.floor(Math.random()*chars.length)]).join("");
     }
 
+    // Upload file
     window.uploadFile = function() {
       const file = document.getElementById("fileInput").files[0];
       const password = document.getElementById("passwordInput").value;
@@ -82,29 +84,35 @@
           });
           document.getElementById("status").textContent = "Upload sukses. Kode: " + code;
         });
+      }).catch(err => {
+        document.getElementById("status").textContent = "Upload gagal: " + err.message;
       });
     };
 
+    // Render daftar file
     const fileTableBody = document.querySelector("#fileTable tbody");
     onValue(ref(db, 'files'), (snapshot) => {
       const data = snapshot.val();
       fileTableBody.innerHTML = "";
-      for (let code in data) {
-        const file = data[code];
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${code}</td>
-          <td>${file.name}</td>
-          <td>${file.password}</td>
-          <td>
-            <button onclick="editFile('${code}')">Edit</button>
-            <button onclick="deleteFile('${code}')">Hapus</button>
-          </td>
-        `;
-        fileTableBody.appendChild(row);
+      if (data) {
+        for (let code in data) {
+          const file = data[code];
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${code}</td>
+            <td>${file.name}</td>
+            <td>${file.password}</td>
+            <td>
+              <button onclick="editFile('${code}')">Edit</button>
+              <button onclick="deleteFile('${code}')">Hapus</button>
+            </td>
+          `;
+          fileTableBody.appendChild(row);
+        }
       }
     });
 
+    // Edit file (ubah password)
     window.editFile = function(code) {
       const newPassword = prompt("Masukkan password baru:");
       if (newPassword) {
@@ -112,6 +120,7 @@
       }
     };
 
+    // Hapus file
     window.deleteFile = function(code) {
       if (confirm("Yakin hapus file dengan kode " + code + "?")) {
         remove(ref(db, 'files/' + code));
