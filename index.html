@@ -1,4 +1,3 @@
-html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,25 +6,40 @@ html
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Masuk ke File</h1>
+  <header>
+    <h1>Akses File</h1>
+    <p>Masukkan kode dan password untuk membuka file</p>
+  </header>
 
-  <div id="step1">
-    <input id="codeInput" placeholder="Masukkan kode file">
-    <button onclick="checkCode()">Lanjut</button>
-  </div>
+  <main>
+    <section id="step1">
+      <input id="codeInput" placeholder="Masukkan kode file">
+      <button onclick="checkCode()">Lanjut</button>
+    </section>
 
-  <div id="step2" style="display:none;">
-    <input id="passwordInput" type="password" placeholder="Masukkan password">
-    <button onclick="checkPassword()">Buka File</button>
-  </div>
+    <section id="step2" style="display:none;">
+      <input id="passwordInput" type="password" placeholder="Masukkan password">
+      <button onclick="checkPassword()">Buka File</button>
+    </section>
 
-  <div id="result"></div>
+    <section id="result"></section>
+  </main>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-    const firebaseConfig = { / config kamu / };
+    const firebaseConfig = {
+      apiKey: "AIzaSyAyHSaALeuwibcF22VNL_6WDlcZepcDB3A",
+      authDomain: "rhf-gamestore.firebaseapp.com",
+      databaseURL: "https://rhf-gamestore-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "rhf-gamestore",
+      storageBucket: "rhf-gamestore.firebasestorage.app",
+      messagingSenderId: "52065906934",
+      appId: "1:52065906934:web:c15f0eff91cc937f787cd7",
+      measurementId: "G-RYFR9D5R5H"
+    };
+
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
@@ -40,7 +54,7 @@ html
           document.getElementById("step1").style.display = "none";
           document.getElementById("step2").style.display = "block";
         } else {
-          document.getElementById("result").textContent = "Kode tidak ditemukan!";
+          document.getElementById("result").textContent = "Kode tidak ditemukan";
         }
       });
     };
@@ -49,16 +63,15 @@ html
       const password = document.getElementById("passwordInput").value;
       if (currentFile && password === currentFile.password) {
         if (currentFile.url.endsWith(".mp4")) {
-          document.getElementById("result").innerHTML = <video src="${currentFile.url}" controls width="400"></video>;
+          document.getElementById("result").innerHTML = `<video src="${currentFile.url}" controls width="400"></video>`;
         } else if (currentFile.url.match(/\.(jpg|png|gif)$/)) {
-          document.getElementById("result").innerHTML = <img src="${currentFile.url}" width="300">;
+          document.getElementById("result").innerHTML = `<img src="${currentFile.url}" width="300">`;
         } else {
-          document.getElementById("result").innerHTML = <a href="${currentFile.url}" target="_blank">${currentFile.name}</a>;
+          document.getElementById("result").innerHTML = `<a href="${currentFile.url}" target="_blank">${currentFile.name}</a>`;
         }
       } else {
-        document.getElementById("result").textContent = "Password salah!";
+        document.getElementById("result").textContent = "Password salah";
       }
     };
   </script>
 </body>
-</html>
