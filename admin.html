@@ -1,1 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Upload Panel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Admin Upload Panel</h1>
+    <p>Unggah file, foto, atau video dengan kode akses dan password</p>
+  </header>
 
+  <main>
+    <section class="upload-box">
+      <input type="file" id="fileInput">
+      <input type="text" id="passwordInput" placeholder="Password untuk file">
+      <button onclick="uploadFile()">Upload</button>
+      <p id="status"></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 RHF Secure Share</p>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+    // Firebase Config (isi dengan konfigurasi project kamu)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "YOUR_PROJECT",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const storage = getStorage(app);
+    const db = getDatabase(app);
+
+    // Generate kode random
+    function randomCode(length=6) {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      return Array.from({length}, () => chars[Math.floor(Math.random()*chars.length)]).join("");
+    }
+
+    // Upload file
+    window.uploadFile = function() {
+      const file = document.getElementById("fileInput").files[0];
+      const password = document.getElementById("passwordInput").value;
+      if (!file || !password) {
+        alert("File dan password wajib diisi");
+        return;
+      }
+
+      const code = randomCode();
+      const storageRef = sRef(storage, 'uploads/' + file.name);
+
+      uploadBytes(storageRef, file).then(snapshot => {
+        getDownloadURL(snapshot.ref).then(url => {
+          set(ref(db, 'files/' + code), {
+            name: file.name,
+            url: url,
+            password: password
+          });
+          document.getElementById("status").textContent = 
+            "Upload sukses. Kode akses: " + code;
+        });
+      });
+    };
+  </script>
+</body>
+</html>
