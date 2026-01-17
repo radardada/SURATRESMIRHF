@@ -14,11 +14,15 @@ header {
 
 main {
   margin: 30px auto;
-  max-width: 600px;
+  max-width: 800px;
   background: white;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.upload-box, .list-box {
+  margin-bottom: 30px;
 }
 
 input {
@@ -31,7 +35,7 @@ input {
 }
 
 button {
-  padding: 10px 20px;
+  padding: 8px 15px;
   background: #6a11cb;
   color: white;
   border: none;
@@ -46,8 +50,14 @@ button:hover {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
 }
 
 th, td {
   border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background: #eee;
+}
